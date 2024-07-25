@@ -29,9 +29,9 @@ const replaceTemplate = (template, item) => {
     output = output.replace(/{%QUANTITY%}/g, item.quantity);
     output = output.replace(/{%PRICE%}/g, item.price);
     output = output.replace(/{%ID}/g, item.id);
-    if (!item.organic)
+    if (!item.organic)//!==> this one is to replace and add class name
         output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-    return output;
+    return output;//!==> After finally replacing "template placeholder" with original data, we will now return the "cardTemplate" with original data for each object.
 };
 
 const server = http.createServer((req, res) => {
@@ -41,13 +41,13 @@ const server = http.createServer((req, res) => {
         //!==> this cardHTMl variable will store a html data of all the json data, with the help of map.
         const cardHTML = dataObj
             .map((prod) => replaceTemplate(cardTemplate, prod))
-            .join("");
+            .join("");//!==> The join method converts an array into a single string, by joining the data inside array with the argument passed inside "join()" method. In this case we are joining array data with nothing.
 
-        const output = overviewTemplate.replace("{%PRODUCT_CARDS%}", cardHTML);
+        const output = overviewTemplate.replace("{%PRODUCT_CARDS%}", cardHTML);//!Finally after obtaining the cardTemplate of all the json data, we will now use that template inside "overviewTemplate" by replacing "{%PRODUCT_CARDS%}" with "cardHTML" as shown above. As "{%PRODUCT_CARDS%}" is also a template placeholder or dummy data.
 
         res.writeHead(200, {
             "Content-type": "text/html",
-        });
+        });//!==> Here we are verifying to the user, that request was successful by passing "200" , and the header data, where we are explaining that the response send by the server is  a html file.
         res.end(output);
         //!====================================== Product page ======================================
     } else if (pathname === "/product") {
