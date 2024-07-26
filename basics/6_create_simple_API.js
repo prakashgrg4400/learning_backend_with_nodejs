@@ -42,7 +42,7 @@ const cardTemplate = fs.readFileSync(
 
 const server = http.createServer((req, res) => {
     //!==> req.url will store the pathname in our link, such as search parameters, so to destructure those pathname and search parameters, we use "url.parse" where "url" is a module which we imported ande parse function breaks down the data present inside "req.url" . The second parameter indicates that the parsed data(breaked down data) i.e. search parameter should be in javascript object format. By default the search parameter are in string format.
-    const {query , pathname} = url.parse(req.url , true);
+    const { query, pathname } = url.parse(req.url, true);
     // const pathname = req.url;
     //!====================================== Overview page ======================================
     if (pathname === "/" || pathname === "/overview") {
@@ -59,12 +59,12 @@ const server = http.createServer((req, res) => {
         res.end(output);
         //!====================================== Product page ======================================
     } else if (pathname === "/product") {
-        res.writeHead(200 , {
-            "Content-type" : "text/html"
+        res.writeHead(200, {
+            "Content-type": "text/html",
         });
-        const product = dataObj.find((item)=>item.id===Number(query.id))//!Selecting product whose id is eqal to search parameters.
-        const output = replaceTemplate(productTemplate , product);//!replacing placeholders with real data.
-        res.end(output);//!displaying data as response to the request.
+        const product = dataObj.find((item) => item.id === Number(query.id)); //!Selecting product whose id is eqal to search parameters.
+        const output = replaceTemplate(productTemplate, product); //!replacing placeholders with real data.
+        res.end(output); //!displaying data as response to the request.
         //!====================================== API page ======================================
     } else if (pathname === "/api") {
         // fs.readFile(`${__dirname}/6_dev_data/data.json`, "utf-8", (err, data) => {
@@ -87,10 +87,12 @@ server.listen(8000, "127.0.0.1", () => {
     console.log("Starting the server at port 8000");
 });
 
-
-//!==> After completing our small project "node farm" , we deep dived into npm i.e. "node package manager" which is used to manage the packages in our node. 
+//!==> After completing our small project "node farm" , we deep dived into npm i.e. "node package manager" which is used to manage the packages in our node.
 //!==> A package.jsom file stores the information of our project, and we can initialize it using npm command "npm init" , which create our "package.json" file for our project .
 //!==> Using node we can install different types of packages or library or modules.
 //!==> There are two types of packages. They are :-
 //! 1) Simple dependencies packages --> Our project depends on these packages to run.
 //! 2) Development dependencies packages --> We use these packages during development phases, but our application doesnt depends on these packages during "production mode" . Some examples are "testing packages" or "nodemon package" which automatically restarts our server, each time our code is updated.
+
+//!==> packages added.    "npm install slugify" --> it is simple dependencies
+//!                      "npm install nodemon --save-dev" --> it is development dependencies .
