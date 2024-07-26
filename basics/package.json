@@ -1,0 +1,18 @@
+{
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "learning nodejs",
+  "main": "6_create_simple_API.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prakash Gurung",
+  "license": "ISC",
+  "dependencies": {
+    "slugify": "^1.6.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
+

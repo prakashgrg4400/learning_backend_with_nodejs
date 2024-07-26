@@ -86,3 +86,11 @@ const server = http.createServer((req, res) => {
 server.listen(8000, "127.0.0.1", () => {
     console.log("Starting the server at port 8000");
 });
+
+
+//!==> After completing our small project "node farm" , we deep dived into npm i.e. "node package manager" which is used to manage the packages in our node. 
+//!==> A package.jsom file stores the information of our project, and we can initialize it using npm command "npm init" , which create our "package.json" file for our project .
+//!==> Using node we can install different types of packages or library or modules.
+//!==> There are two types of packages. They are :-
+//! 1) Simple dependencies packages --> Our project depends on these packages to run.
+//! 2) Development dependencies packages --> We use these packages during development phases, but our application doesnt depends on these packages during "production mode" . Some examples are "testing packages" or "nodemon package" which automatically restarts our server, each time our code is updated.
