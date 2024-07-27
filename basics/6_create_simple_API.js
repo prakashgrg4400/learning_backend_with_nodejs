@@ -107,3 +107,16 @@ server.listen(8000, "127.0.0.1", () => {
 
 //!=============== slugify ================
 //! ==> now here we will implement sulgify i.e. third party library by reading documnetation.
+
+
+//!==================================== deep dive into package version,update and delete ========================
+//!==>  Inside "package.json" you will get to see all the regular and development dependencies in a structure like this:-
+//!                                                       "dependencies": {
+//!                                                          "slugify": "^1.6.6"
+//!                                                        },
+//! -->  where "^1.6.6" , last 6 means "patch" , middle 6 means "minor" , and first 1 means "major". And the beginning symbol i.e.   "^" means update our npm package but only minor and patch updates. There are two more symbols used beside "^" . They are "~" which says only update "patch" update. And the last one is "*" , which says update all i.e. major,minor and patch . By default our node manager always puts "^" symbol infront of our major,minor and patch version. But it is good to use patch symbol i.e. "~" ,as it will not really affect our code that much.
+//! --> Now lets discuss about major,minor and patch. "patch" means those updates which is related with fixing errors. Suppose we have a version "1.2.3" . And recently we found a bug and solved the bug. Than our package version will be change from "1.2.3" to "1.2.4" . So patch is related to those updates which deals with fixing of bugs.    "minor" deals with adding of new features on top of our old packages code, without modifying old codes. But using "^" for minor update is not good, as the new feature might contain bugs and may lead to breakdown of our aplication.  Finally we have "major" where we change the old codes of our packages heavily of modify the old code heavily within the package. So this is all the related to verion pf a package.
+//! --> "npm outdated" , this will give a list of packages which are outdated in a table like structure.
+//! --> "npm install package_name@version" , this will help you install a package of your desired version. For eg:- we have a package named "slugify" . Suppose I dont want the latest version of "slugify" i.e. "1.6.6". than you can write your own version as  "npm install slugify@1.0.0" .
+//! --> "npm update slugify" , It will update you package to the latest version based on *,^,~ .
+//! --> "npm uninstall slugify" , it will uninstall a package.
