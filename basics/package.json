@@ -4,7 +4,7 @@
   "description": "learning nodejs",
   "main": "6_create_simple_API.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon 6_create_simple_API"
   },
   "author": "Prakash Gurung",
   "license": "ISC",

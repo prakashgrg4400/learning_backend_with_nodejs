@@ -91,8 +91,11 @@ server.listen(8000, "127.0.0.1", () => {
 //!==> A package.jsom file stores the information of our project, and we can initialize it using npm command "npm init" , which create our "package.json" file for our project .
 //!==> Using node we can install different types of packages or library or modules.
 //!==> There are two types of packages. They are :-
-//! 1) Simple dependencies packages --> Our project depends on these packages to run.
+//! 1) Simple or regular dependencies packages --> Our project depends on these packages to run.
 //! 2) Development dependencies packages --> We use these packages during development phases, but our application doesnt depends on these packages during "production mode" . Some examples are "testing packages" or "nodemon package" which automatically restarts our server, each time our code is updated.
 
 //!==> packages added.    "npm install slugify" --> it is simple dependencies
 //!                      "npm install nodemon --save-dev" --> it is development dependencies .
+//!==> we have installed above libraries in a single folder locally. so to run nodemon whci helps us to restart our server, each tme our code changes. We have to create a script in "package.json" , where "start":"nodemon 6_create_simple_API.js" inside "scripts" . Than you can run this command in terminal using "npm run start" . But you can give any name instaed of "start" inside "scripts" and depending upon that name you use it in the terminal accordingly.
+
+//!==> But if you want to install "nodemon" package for every project, than you can install this package globally in your project using the commanf line "npm install nodemon --global". Now your package is installed globally. You dont have to update your package.json "scripts" folder anymore. But you can use it directly in the terminal by using the keyword "nodemon file_name". It will start the server automatically.
