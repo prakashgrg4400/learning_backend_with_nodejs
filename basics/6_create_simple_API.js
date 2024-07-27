@@ -1,11 +1,16 @@
 const http = require("http");
 const url = require("url");
 const fs = require("fs");
+const slugify = require("slugify");
 const replaceTemplate = require("./modules/replaceTemplate");
 //!==> "__dirname" is a node variable which is predefned inside node, and it gives us the perfect location or path of file in which we are currently working. Suppose we are working inside directory named "basics" so using "__dirname" will return us "C:\Desktop\node\basics" . And it applies for any folder.
 //!==> We want to read the file only once, when "/api" request is called at the beginning, after that we dont want to read the file again and again, so we are reading the file outside the callBack function of "server", because "server callback function" will be called again again each time user sends request again and again , and json data will be read again and again.
 const data = fs.readFileSync(`${__dirname}/6_dev_data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
+
+//===> Below 2 line code is just to show that how we third party libraries using documentation.
+const slug = dataObj.map(el=>slugify(el.productName , {lower:true}))
+console.log(slug);
 
 const overviewTemplate = fs.readFileSync(
     `${__dirname}/templates/overview.html`,
@@ -99,3 +104,6 @@ server.listen(8000, "127.0.0.1", () => {
 //!==> we have installed above libraries in a single folder locally. so to run nodemon whci helps us to restart our server, each tme our code changes. We have to create a script in "package.json" , where "start":"nodemon 6_create_simple_API.js" inside "scripts" . Than you can run this command in terminal using "npm run start" . But you can give any name instaed of "start" inside "scripts" and depending upon that name you use it in the terminal accordingly.
 
 //!==> But if you want to install "nodemon" package for every project, than you can install this package globally in your project using the commanf line "npm install nodemon --global". Now your package is installed globally. You dont have to update your package.json "scripts" folder anymore. But you can use it directly in the terminal by using the keyword "nodemon file_name". It will start the server automatically.
+
+//!=============== slugify ================
+//! ==> now here we will implement sulgify i.e. third party library by reading documnetation.
