@@ -38,6 +38,10 @@ fs.readFile("./text.txt", () => {
     crypto.pbkdf2("password", "salt", 100000, 1024, "sha512", () => {
         console.log(Date.now() - start, "password encrypted");
     });
+
+    console.log("proof above four encryption is performed by threadpool and event loop is execution this code.")
     
 });
 console.log("This is the first one to be executed");
+// first top level code will be executed all the codes except callback functions and ascyn task.
+// now the callback codes will be sent to event loop, and event loop will handle the code inside callback function. 
