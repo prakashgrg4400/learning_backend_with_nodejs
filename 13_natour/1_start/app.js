@@ -29,6 +29,8 @@ const app = express();
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));// change json into javascript data type
 
+app.use(express.json());// "use()" method is used to add "middleWare" in out project. Express.json() is a middleware function which converts the json data into javascript object format in the middle.
+
 app.get("/api/v1/tours" , (req , res)=>{ //--> the second parameter in get() method is called route handler.
     res.status(200).json({// doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
         status:"success",
@@ -36,6 +38,21 @@ app.get("/api/v1/tours" , (req , res)=>{ //--> the second parameter in get() met
         data:{
             tours:tours
         }
+    })
+})
+
+app.post("/api/v1/tours" , (req , res)=>{
+    // console.log(req.body); // without adding middleware , the body property will return us "undefined" otherwise it will provide us the new data entered buy the user.
+    // res.end("done");
+
+    // Now we knoe the new data created by the client resides inside req.body, and that data is handeled by the middleware which sits between client and server. It also helps us in modifying the data as shown below.
+    const tourId = tours[tours.length-1].id + 1;
+    const newTour = Object.assign({id:tourId} , req.body);//merging two objects into single object.
+    tours.push(newTour);
+
+    //--> here we could have read the file synchronously but we are not, it is because this callback function is being executed by event loop, and if we had read the file synchronously, than it will had blocked the event loop.
+    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json` , JSON.stringify(tours) , err=>{
+        res.status(201).json(newTour);// 201 status code is for creating new data .
     })
 })
 
