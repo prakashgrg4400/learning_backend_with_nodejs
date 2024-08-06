@@ -31,10 +31,24 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 ); // change json into javascript data type
 
-app.use(express.json()); // "use()" method is used to add "middleWare" in out project. Express.json() is a middleware function which converts the json data into javascript object format in the middle.
+app.use(express.json()); // "use()" method is used to add "middleWare" in out project. Express.json() is a middleware function which converts the json data into javascript object format in the middle of request and response, and makes the data available to "req.body" in the response side.
+
+//--> below is a custom made middleware. All the middle ware have access to "request object","response object" and "next method" .And it is compulspry to use "next()" method to pass the handler to the next middleware, or our code will get stuck. All of these middlewares are executed between request and response i.e. Each time a request is made on any url these custom middleware will be executed automatically for every request in the pattern in which the code is written. And finally "route handeler" is executed. A "routte handeler" is also a type of middleware function, which is not triggered each we make a request. But is triggered when we make request to their respective "routes" . 
+app.use((req,res,next)=>{
+  console.log("Hello from middleware");
+  next(); 
+})
+app.use((req,res,next)=>{
+  console.log("Hello from second middleware");
+  next(); 
+})
+app.use((req,res,next)=>{
+  req.Mytime = new Date().toISOString();// here we are adding our own new property inside request object.
+  next(); 
+})
 
 const getAllTours = (req, res) => {
-  //--> the second parameter in get() method is called route handler.
+  console.log(req.Mytime);// this is a proof that middleware are executed in first come first serve pattern.
   res.status(200).json({
     // doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
     status: 'success',
@@ -117,7 +131,7 @@ const deleteTour = (req, res) => {
 
 //   /api/v1/tours/:id/:x/:y --> if you want to add multiple variable in url
 //   /api/v1/tours/:id/:name? --> if you want optional parameters add "?" after the name of variable , default name = undefined
-// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours', getAllTours);//--> the second parameter in get() method is called route handler.
 // app.get('/api/v1/tours/:id', getTour);
 // app.post('/api/v1/tours', createTour);
 // app.patch('/api/v1/tours/:id', updateTour);
