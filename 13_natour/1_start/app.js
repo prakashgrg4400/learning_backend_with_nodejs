@@ -33,7 +33,7 @@ const tours = JSON.parse(
 
 app.use(express.json()); // "use()" method is used to add "middleWare" in out project. Express.json() is a middleware function which converts the json data into javascript object format in the middle.
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   //--> the second parameter in get() method is called route handler.
   res.status(200).json({
     // doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
@@ -43,17 +43,16 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
-});
+};
 
-//   /api/v1/tours/:id/:x/:y --> if you want to add multiple variable in url
-//   /api/v1/tours/:id/:name? --> if you want optional parameters add "?" after the name of variable , default name = undefined
-app.get('/api/v1/tours/:id', (req, res) => {
-  // console.log(req.params); // the path variables or parameters are stored inside "req.params" 
-  const id = Number(req.params.id);// by default id is in string, or  (req.params.id*1) does the same trick as Number().
+const getTour = (req, res) => {
+  // console.log(req.params); // the path variables or parameters are stored inside "req.params"
+  const id = Number(req.params.id); // by default id is in string, or  (req.params.id*1) does the same trick as Number().
 
-  const tour = tours.find((el) => el.id === id);// searching the tour whose id is equal to path variable .
+  const tour = tours.find((el) => el.id === id); // searching the tour whose id is equal to path variable .
 
-  if (!tour) {// Condition if id is not found inside "tours" .
+  if (!tour) {
+    // Condition if id is not found inside "tours" .
     return res.status(404).json({
       status: 'fail',
       message: 'Invalid id',
@@ -66,9 +65,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour: tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   // console.log(req.body); // without adding middleware , the body property will return us "undefined" otherwise it will provide us the new data entered buy the user.
   // res.end("done");
 
@@ -85,38 +84,53 @@ app.post('/api/v1/tours', (req, res) => {
       res.status(201).json(newTour); // 201 status code is for creating new data .
     }
   );
-});
+};
 
-app.patch("/api/v1/tours/:id" , (req , res)=>{
-  if(req.params.id>=tours.length)
-  {
+const updateTour = (req, res) => {
+  if (req.params.id >= tours.length) {
     return res.status(404).json({
-      status:"fail",
-      message:"Invalid id"
-    })
+      status: 'fail',
+      message: 'Invalid id',
+    });
   }
-  
-  res.status(200).json({
-    status:"success",
-    data:{
-      tour:"<Your updated tour herer>"
-    }
-  })
-})
 
-app.delete("/api/v1/tours/:id" , (req , res)=>{
-  if((req.params.id*1)>=tours.length)
-  {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<Your updated tour herer>',
+    },
+  });
+};
+
+const deleteTour = (req, res) => {
+  if (req.params.id * 1 >= tours.length) {
     return res.status(404).json({
-      status:"fail",
-      message:"invalid id" 
-    })
+      status: 'fail',
+      message: 'invalid id',
+    });
   }
   res.status(204).json({
-    status:"success",
-    data:null
-  })
-})
+    status: 'success',
+    data: null,
+  });
+};
+
+//   /api/v1/tours/:id/:x/:y --> if you want to add multiple variable in url
+//   /api/v1/tours/:id/:name? --> if you want optional parameters add "?" after the name of variable , default name = undefined
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', createTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+// above 5 line of code , can be more organized by usign route() method as shown below. Working mechanish is same .
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 3000;
 
