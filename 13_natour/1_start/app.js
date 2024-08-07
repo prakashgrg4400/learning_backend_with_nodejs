@@ -134,37 +134,39 @@ const deleteTour = (req, res) => {
   });
 };
 
-const getAllUsers = (req , res)=>{
+const getAllUsers = (req, res) => {
   res.status(500).json({
-    status:"internal server error",
-    message:"The route is not defined"
-  })
-}
-const getUser = (req , res)=>{
+    status: 'internal server error',
+    message: 'The route is not defined',
+  });
+};
+const getUser = (req, res) => {
   res.status(500).json({
-    status:"interna server error" ,
-    message :"The route is not defined yet",
-  })
-
-}
-const createUser = (req , res)=>{
-  res.status(500),json({
-    status:"internal server error",
-    message:"The route is not defined yet"
-  })
-}
-const updateUser = (req , res)=>{
-  res.status(500),json({
-    status:"internal server error",
-    message:"The route is not defined yet"
-  })
-}
-const deleteUser = (req , res)=>{
-  res.status(500),json({
-    status:"internal server error",
-    message:"The route is not defined yet"
-  })
-}
+    status: 'interna server error',
+    message: 'The route is not defined yet',
+  });
+};
+const createUser = (req, res) => {
+  res.status(500),
+    json({
+      status: 'internal server error',
+      message: 'The route is not defined yet',
+    });
+};
+const updateUser = (req, res) => {
+  res.status(500),
+    json({
+      status: 'internal server error',
+      message: 'The route is not defined yet',
+    });
+};
+const deleteUser = (req, res) => {
+  res.status(500),
+    json({
+      status: 'internal server error',
+      message: 'The route is not defined yet',
+    });
+};
 
 //--------------------------------- routes ------------------------------------------------
 //   /api/v1/tours/:id/:x/:y --> if you want to add multiple variable in url
@@ -176,21 +178,47 @@ const deleteUser = (req , res)=>{
 // app.delete('/api/v1/tours/:id', deleteTour);
 
 // above 5 line of code , can be more organized by usign route() method as shown below. Working mechanish is same .
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
-app
-  .route('/api/v1/tours/:id')
+// app
+//   .route('/api/v1/tours/:id')
+//   .get(getTour)
+//   .patch(updateTour)
+//   .delete(deleteTour);
+
+// app.route('/api/v1/users').get(getAllUsers).post(createUser);
+
+// app
+//   .route('/api/v1/users/:id')
+//   .patch(updateUser)
+//   .delete(deleteUser)
+//   .get(getUser);
+
+//-----> creating router to handle a set of paths, by mounting the route in the base path as shown below.
+//--> Previously we used the express to single handedly handle all routes, but thet will make the code hard to read. So we will create multiple routes which will handle their specific routes. And finally mount the routes in the app.
+//--> tourRoute and userRouter and middleware functions. So we use them with middleware. 
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+
+tourRouter.route('/').get(getAllTours).post(createTour);
+
+tourRouter
+  .route('/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
 
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
+  userRouter.route('/').get(getAllUsers).post(createUser);
 
-app
-  .route('/api/v1/users/:id')
+  userRouter
+  .route('/:id')
   .patch(updateUser)
   .delete(deleteUser)
   .get(getUser);
+  
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 const port = 3000;
 
