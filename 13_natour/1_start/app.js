@@ -24,7 +24,7 @@
 
 const fs = require('fs');
 const express = require('express');
-const morgan = require('morgan');// this package shows us the details of a request such as request method, url where request is send ,status code ,time taken , length of content.
+const morgan = require('morgan'); // this package shows us the details of a request such as request method, url where request is send ,status code ,time taken , length of content.
 
 const app = express();
 
@@ -37,23 +37,23 @@ const tours = JSON.parse(
 app.use(morgan('dev'));
 app.use(express.json()); // "use()" method is used to add "middleWare" in out project. Express.json() is a middleware function which converts the json data into javascript object format in the middle of request and response, and makes the data available to "req.body" in the response side.
 
-//--> below is a custom made middleware. All the middle ware have access to "request object","response object" and "next method" .And it is compulspry to use "next()" method to pass the handler to the next middleware, or our code will get stuck. All of these middlewares are executed between request and response i.e. Each time a request is made on any url these custom middleware will be executed automatically for every request in the pattern in which the code is written. And finally "route handeler" is executed. A "routte handeler" is also a type of middleware function, which is not triggered each we make a request. But is triggered when we make request to their respective "routes" . 
-app.use((req,res,next)=>{
-  console.log("Hello from middleware");
-  next(); 
-})
-app.use((req,res,next)=>{
-  console.log("Hello from second middleware");
-  next(); 
-})
-app.use((req,res,next)=>{
-  req.Mytime = new Date().toISOString();// here we are adding our own new property inside request object.
-  next(); 
-})
+//--> below is a custom made middleware. All the middle ware have access to "request object","response object" and "next method" .And it is compulspry to use "next()" method to pass the handler to the next middleware, or our code will get stuck. All of these middlewares are executed between request and response i.e. Each time a request is made on any url these custom middleware will be executed automatically for every request in the pattern in which the code is written. And finally "route handeler" is executed. A "routte handeler" is also a type of middleware function, which is not triggered each we make a request. But is triggered when we make request to their respective "routes" .
+app.use((req, res, next) => {
+  console.log('Hello from middleware');
+  next();
+});
+app.use((req, res, next) => {
+  console.log('Hello from second middleware');
+  next();
+});
+app.use((req, res, next) => {
+  req.Mytime = new Date().toISOString(); // here we are adding our own new property inside request object.
+  next();
+});
 
 // ------------------------------------- route handeler -------------------------------------------
 const getAllTours = (req, res) => {
-  console.log(req.Mytime);// this is a proof that middleware are executed in first come first serve pattern.
+  console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
   res.status(200).json({
     // doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
     status: 'success',
@@ -134,6 +134,38 @@ const deleteTour = (req, res) => {
   });
 };
 
+const getAllUsers = (req , res)=>{
+  res.status(500).json({
+    status:"internal server error",
+    message:"The route is not defined"
+  })
+}
+const getUser = (req , res)=>{
+  res.status(500).json({
+    status:"interna server error" ,
+    message :"The route is not defined yet",
+  })
+
+}
+const createUser = (req , res)=>{
+  res.status(500),json({
+    status:"internal server error",
+    message:"The route is not defined yet"
+  })
+}
+const updateUser = (req , res)=>{
+  res.status(500),json({
+    status:"internal server error",
+    message:"The route is not defined yet"
+  })
+}
+const deleteUser = (req , res)=>{
+  res.status(500),json({
+    status:"internal server error",
+    message:"The route is not defined yet"
+  })
+}
+
 //--------------------------------- routes ------------------------------------------------
 //   /api/v1/tours/:id/:x/:y --> if you want to add multiple variable in url
 //   /api/v1/tours/:id/:name? --> if you want optional parameters add "?" after the name of variable , default name = undefined
@@ -151,6 +183,14 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
+
+app
+  .route('/api/v1/users/:id')
+  .patch(updateUser)
+  .delete(deleteUser)
+  .get(getUser);
 
 const port = 3000;
 
