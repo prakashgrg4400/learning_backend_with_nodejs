@@ -17,6 +17,17 @@ exports.checkId = (req , res , next , val)=>{
   }
   next() ;
 }
+exports.checkBody = (req , res , next)=>{
+  console.log(req.body);
+  if(!req.body.name || !req.body.price)
+  {
+    return res.status(404).json({
+      status:"fail",
+      message:"name or price not found"
+    })
+  }
+  next();
+}
 
 exports.getAllTours = (req, res) => {
   console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
