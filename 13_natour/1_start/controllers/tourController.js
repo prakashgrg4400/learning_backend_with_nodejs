@@ -4,6 +4,20 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+//-->Now we will use this function inside "param middleware" as a middleware function. And this will run before controller i.e. route handeler. You might have instead of doing it with middleware , we could had just create a function and called them inside every controller to check if id is valid or not. Yes you could have done that, but it will go against express working policy where working with middleware is recommended.
+exports.checkId = (req , res , next , val)=>{
+  const id = Number(req.params.id); // by default id is in string, or  (req.params.id*1) does the same trick as Number().
+    console.log(`Tour id is : ${val}`);
+
+  if (req.params.id * 1 >= tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid id',
+    });
+  }
+  next() ;
+}
+
 exports.getAllTours = (req, res) => {
   console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
   res.status(200).json({
@@ -17,18 +31,7 @@ exports.getAllTours = (req, res) => {
 
 exports.getTour = (req, res) => {
   // console.log(req.params); // the path variables or parameters are stored inside "req.params"
-  const id = Number(req.params.id); // by default id is in string, or  (req.params.id*1) does the same trick as Number().
-
-  const tour = tours.find((el) => el.id === id); // searching the tour whose id is equal to path variable .
-
-  if (!tour) {
-    // Condition if id is not found inside "tours" .
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid id',
-    });
-  }
-
+  const tour = tours.find((tour)=>tour.id===(req.params.id*1))
   res.status(200).json({
     status: 'success',
     data: {
@@ -51,12 +54,12 @@ exports.createTour = (req, res) => {
 };
 
 exports.updateTour = (req, res) => {
-  if (req.params.id >= tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid id',
-    });
-  }
+  // if (req.params.id >= tours.length) { // this task is done by params middleware
+  //   return res.status(404).json({
+  //     status: 'fail',
+  //     message: 'Invalid id',
+  //   });
+  // }
 
   res.status(200).json({
     status: 'success',
@@ -67,12 +70,12 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  if (req.params.id * 1 >= tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  }
+  // if (req.params.id * 1 >= tours.length) { // this task is done by params middleware
+  //   return res.status(404).json({
+  //     status: 'fail',
+  //     message: 'invalid id',
+  //   });
+  // }
   res.status(204).json({
     status: 'success',
     data: null,
