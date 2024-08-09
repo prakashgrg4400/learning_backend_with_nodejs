@@ -237,8 +237,9 @@ const app = express();
 //------------------------------------ middlewares ----------------------------------------------------
 //--> All the middlewares will be written in this file .
 app.use(morgan('dev'));
-
 app.use(express.json());
+app.use(express.static(`${__dirname}/public`))// To read a static file in express.js we use "express.static(file_path)" middleware function, which deals with reading static file. here "file_path" means the folder which stores all our static file but not the path of a static file. In this project our static files are in "public" folder, so we give this pathname to "static()" middleware function. Suppose you are searching for "/overview.html" , first express checks whether this path is defined in router or not. If it is not defined than it reads the "express.static()" middleware function and makes the folder whose path is written inside "static()" as a root path, and automatically searches for the static files i.e. html,css,js,images and renders them in the client side. Remember this middleware function only reads the "static file" , but not the folders. 
+// So if you use any of this path , than express is smart enough to read these files from "public" folder automatically. The path are:- "/overview.html"  ,  "/tour.html" , "/css/style.css" , "/img/favicon.png" and so on.  But if use folder name like "/img" , than you will not get anything as "/img" is not static file but it is a folde and the middleware function "express.static()" only reads static file. 
 
 app.use((req, res, next) => {
   console.log('Hello from middleware');
