@@ -1,0 +1,17 @@
+command                            purpose
+-------                           ---------
+show dbs             ----->     this command will show all the database present inside mongodb.
+
+use database_name    ----->     use command will check if the database already exist or not, if database already exist than it will switch to that database , but if the database is not present , than first it will create that database and switch to that database .
+
+show collections     ----->      this command will show all the collections(table) available in our current databasw which we are   using now.
+
+db.collection_name.insertOne({name:"Prakash" , price:400 , rating:2.5}) ----->  this command states that , " db means current database " , "collection_name means you can give your desired collection(table) name here and it will create that collection in your database" , "insertOne() function accepts documents(row data) in the form of plain javascript object". And finally after running this command , a new collection will be created having a single document as  data. And the javascript object which was send will be converted to json and finally into bson .
+
+db.collection_nameinsertMany()  ----->  this command is similar to above command , the only difference is that we can enter multiple "documents i.e. row" data at the same time .
+
+db.collection_name.find()  ----->   this command will find the collection i.e. table whose name is written in place of "collection_name" and display all the data(documents) present inside that collection .
+
+quit()              ----->    this command is used to quit the mongo shell .
+
+"ctrl + l"          ----->    this command is used clear the mongo shell .
