@@ -8,10 +8,29 @@ show collections     ----->      this command will show all the collections(tabl
 
 db.collection_name.insertOne({name:"Prakash" , price:400 , rating:2.5}) ----->  this command states that , " db means current database " , "collection_name means you can give your desired collection(table) name here and it will create that collection in your database" , "insertOne() function accepts documents(row data) in the form of plain javascript object". And finally after running this command , a new collection will be created having a single document as  data. And the javascript object which was send will be converted to json and finally into bson .
 
-db.collection_nameinsertMany()  ----->  this command is similar to above command , the only difference is that we can enter multiple "documents i.e. row" data at the same time .
+db.collection_nameinsertMany([{},{},{}])  ----->  this command is similar to above command , the only difference is that we can enter multiple "documents i.e. row" data at the same time .
 
 db.collection_name.find()  ----->   this command will find the collection i.e. table whose name is written in place of "collection_name" and display all the data(documents) present inside that collection .
 
 quit()              ----->    this command is used to quit the mongo shell .
 
 "ctrl + l"          ----->    this command is used clear the mongo shell .
+
+db.collection_name.find({name:"prakash"}) ----->  all the documents whose field have name="prakash" will be displayed . Its a way of filtering the data.
+
+                 $  -----> this symbol refers to "operator" in mongodb.
+                 $lt ----->  $ is saying that its a operator, and "lt" is saying that its "less than operator"
+                 $gt ----->  "gt" is saying that its an "greater than operator".
+                 $lte ---->  "lt" = less than    and    "lte" = less than equal to 
+                 $gte ----->  "$gte" = greater than equal to operator . 
+
+db.collection_name.find( { price:{$lte:500} } )  -----> this command is saying find all the files whose price is greater than and equal to 500.
+
+========================================= And operator ========================================
+db.collection_name.find({ price:{$lte:1000} , rating:${gte:4.5} }) ----> It is a way of using "And" operator in mongodb, where we define two conditions inside the same object .
+
+========================================= Or operator =======================================
+db.collection_name.find({ $or : [{price:{$lt:500}} , {rating:{$gt:4}}] }) ----> It is a way of using "OR" operator in mongoDB. Where if any one of the conditions is satisfied present inside the array , than it will display all the data satisfying any of these conditions.
+
+======================================== display specific field only ===============================
+db.collection_name.fincd({your condition here} , {name:1}) ----> the first object always defines the condition, and the second object is used which fields to be displayed. Since we wrote the name field only, so only name will be displayed.
