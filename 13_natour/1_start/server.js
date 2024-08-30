@@ -3,6 +3,23 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' }); // here we are specifying the path of our environment variable, so it will be added to the node environment variable. The file which stores environment variable have extension as ".env" as seen in "config.env" .
 
 const app = require('./app');
+const mongoose = require('mongoose');
+
+const db = process.env.DATABASE.replace('<PW>', process.env.DATABASE_PASSWORD);
+console.log(db);
+mongoose
+  .connect(db, {
+    // mongoose
+    // .connect(process.env.LOCAL_DATABASE, {
+    // useNewUrlParser: true,
+    // useCreateIndex: true,
+    // useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then((con) => {
+    console.log(con.connections);
+    console.log('connection successfull');
+  });
 
 //====================================== environment variable ==============================
 //--> environment variable are global variables which determines in which environment our "node" or "express" app is working on i.e. "development environment" or "production environment" and many more. Environmet variable are also used for configuration purpose.
@@ -27,7 +44,6 @@ app.listen(port, () => {
 // NOw use "npm run start:dev" , and it will run the server in the development mode, where our "morgan" package is set to run.
 // "npm run start:prod" , now if you will use this than the server will run in production mode , where "morgan" package will not run, you cann= view the code in "app.js" .
 //!  There is "PORT" environment variable which you might have to modify in "postman app" .
-
 
 //===================== following packages are needed for configuring prettier and eslint ==========================
 //! npm i eslint prettier eslint-config-prettier eslint-plugin-prettier eslint-config-airbnb eslint-plugin-node eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react --save-dev
