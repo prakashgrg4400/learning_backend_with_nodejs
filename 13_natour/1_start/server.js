@@ -5,16 +5,15 @@ dotenv.config({ path: './config.env' }); // here we are specifying the path of o
 const app = require('./app');
 const mongoose = require('mongoose');
 
+//===> connecting to the database using "mongoose" library. "mongoose.connect()" takes two parameters. The first one is a link to the database connection, which can be local database i.e. "mongodb://localhost:27017/database_name" or a database based on the cloud platform like "mongodb atlas" -> "mongodb+srv://taekwondo4400:<PW>@cluster0.ioafd.mongodb.net/natour?retryWrites=true&w=majority&appName=Cluster0" .
 const db = process.env.DATABASE.replace('<PW>', process.env.DATABASE_PASSWORD);
 console.log(db);
 mongoose
   .connect(db, {
     // mongoose
     // .connect(process.env.LOCAL_DATABASE, {
-    // useNewUrlParser: true,
-    // useCreateIndex: true,
-    // useFindAndModify: false,
-    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true, // setting this true meanse, mongoose will use a new connection engine in mongodb, to create a stable connection with our database and application. 
   })
   .then((con) => {
     console.log(con.connections);
@@ -35,14 +34,14 @@ app.listen(port, () => {
   console.log(`Starting the server at port ${port}`);
 });
 
-// "NODE_ENV=development npm run start" , if you type this in terminal than terminal will throw error, because here we are setting environmetn variable and our pc doesnt recognize this comman "NODE_ENV" , so to support that we will use "cross-env" package. And after installing just use "cross-env NODE_ENV=development npm run start"; But if you type this command directly it will not run as it is not installed globally, to be able to run that command you need to install it globally, but there is another way i.e. by configuring our package.json file . the setting looks like this:-ED
+// "NODE_ENV=development npm run start" , if you type this in terminal than terminal will throw error, because here we are setting environment variable and our pc doesnt recognize this command "NODE_ENV" , so to support that we will use "cross-env" package. And after installing just use "cross-env NODE_ENV=development npm run start"; But if you type this command directly it will not run as it is not installed globally, to be able to run that command you need to install it globally, but there is another way i.e. by configuring our package.json file . the setting looks like this:-ED
 // {
 // "start:dev": "cross-env NODE_ENV=development nodemon server.js",
 // "start:prod": "cross-env NODE_ENV=production nodemon server.js"
 // }
 
 // NOw use "npm run start:dev" , and it will run the server in the development mode, where our "morgan" package is set to run.
-// "npm run start:prod" , now if you will use this than the server will run in production mode , where "morgan" package will not run, you cann= view the code in "app.js" .
+// "npm run start:prod" , now if you will use this than the server will run in production mode , where "morgan" package will not run, you can view the code in "app.js" .
 //!  There is "PORT" environment variable which you might have to modify in "postman app" .
 
 //===================== following packages are needed for configuring prettier and eslint ==========================

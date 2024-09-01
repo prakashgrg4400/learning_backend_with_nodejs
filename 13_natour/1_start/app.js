@@ -1,4 +1,4 @@
-//======================================= Basics of ecpress =========================================
+//======================================= Basics of express =========================================
 // const express = require('express');// importing express library .
 
 // const app = express() ; // express is a function , which when called returns us a list of useful properties and function inside an object, which is then stores inside "app" variable.
@@ -6,7 +6,7 @@
 //--> for handeling "routes" in nodejs , we did multiple condition stuffs inside callback function of "createServer" , but here its easy.
 //--> get() method is saying that the request is "get" , and the path is the "root" path , and the callback function will be triggered each time we visit this path. we used "re.statusCode = 400" previously, but we can directly set it using status() method. The "express" library provides us with more functionality than node. The "send function" is similar to "end()" , which is used to send data to the client.
 // app.get("/" , (req , res)=>{
-//     // res.status(200).send("Hello from the server side , I am Prakash Gurung");
+//    // res.status(200).send("Hello from the server side , I am Prakash Gurung");
 //     res.status(200).json({message:"I am a student" , app:"Natours"});
 // })
 
@@ -35,9 +35,9 @@
 //------------------------------------ middlewares ----------------------------------------------------
 
 // app.use(morgan('dev'));
-// app.use(express.json()); // "use()" method is used to add "middleWare" in out project. Express.json() is a middleware function which converts the json data into javascript object format in the middle of request and response, and makes the data available to "req.body" in the response side.
+// app.use(express.json()); // "use()" method is used to add "middleWare" in our project. Express.json() is a middleware function which converts the json data into javascript object format in the middle of request and response, and makes the data available to "req.body" in the response side.
 
-//--> below is a custom made middleware. All the middle ware have access to "request object","response object" and "next method" .And it is compulspry to use "next()" method to pass the handler to the next middleware, or our code will get stuck. All of these middlewares are executed between request and response i.e. Each time a request is made on any url these custom middleware will be executed automatically for every request in the pattern in which the code is written. And finally "route handeler" is executed. A "routte handeler" is also a type of middleware function, which is not triggered each we make a request. But is triggered when we make request to their respective "routes" .
+//--> below is a custom made middleware. All the middle ware have access to "request object","response object" and "next method" .And it is compulspry to use "next()" method to pass the handler to the next middleware, or our code will get stuck. All of these middlewares are executed between request and response i.e. Each time a request is made on any url these custom middleware will be executed automatically for every request in the pattern in which the code is written. And finally "route handeler" is executed. A "routte handeler" is also a type of middleware function, which is not triggered each time we make a request. But is triggered when we make request to their respective "routes" .
 // app.use((req, res, next) => {
 //   console.log('Hello from middleware');
 //   next();
@@ -55,7 +55,7 @@
 // const getAllTours = (req, res) => {
 //   console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
 //   res.status(200).json({
-//     // doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
+   //! doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
 //     status: 'success',
 //     result: tours.length,
 //     data: {
@@ -65,13 +65,13 @@
 // };
 
 // const getTour = (req, res) => {
-//   // console.log(req.params); // the path variables or parameters are stored inside "req.params"
+  //! console.log(req.params); // the path variables or parameters are stored inside "req.params"
 //   const id = Number(req.params.id); // by default id is in string, or  (req.params.id*1) does the same trick as Number().
 
 //   const tour = tours.find((el) => el.id === id); // searching the tour whose id is equal to path variable .
 
 //   if (!tour) {
-//     // Condition if id is not found inside "tours" .
+    //! Condition if id is not found inside "tours" .
 //     return res.status(404).json({
 //       status: 'fail',
 //       message: 'Invalid id',

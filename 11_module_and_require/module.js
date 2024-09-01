@@ -15,7 +15,7 @@
 
 
 //--> below code will print us the wrapper function and shows how it looks like
-// console.log(require("module").wrapper);//the "module" is an internal working library of nodejs .
+console.log(require("module").wrapper);//the "module" is an internal working library of nodejs .
 // [
 //     '(function (exports, require, module, __filename, __dirname) { 
 //     });'

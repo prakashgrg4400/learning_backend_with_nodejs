@@ -16,30 +16,30 @@ const server = http.createServer();
 
 //====================== method 2(using stream) ======================================
 // server.on("request" , (req , res)=>{
-//     //-< creatinf "read stream". This stream has three events. they are "data" , "end" and "error" . The data event is triggered till there is piece of content in the file. The end event is triggered , when we have read a file completely piece by piece. And finally the error event is triggered, when there is error in reading file
+    // -> creating "read stream". This stream has three events. they are "data" , "end" and "error" . The data event is triggered till there is piece of content in the file. The end event is triggered , when we have read a file completely piece by piece. And finally the error event is triggered, when there is error in reading file
 //     const readable = fs.createReadStream(`${__dirname}/streamFile.txt`);
 
 //     readable.on("data" , chunk=>{
 //         res.write(chunk);// write method is providing response to the user by sending the data piee by piece .
-//     })//!--> while reading a file chunk by chnukusing "data" event , it is important to use "end" event to, so that node knows when to stop, after a file is read successfully.
+//     })//!--> while reading a file chunk by chnuk using "data" event , it is important to use "end" event to, so that node knows when to stop, after a file is read successfully.
 
 //     readable.on("end" , ()=>{
 //         res.end();
 //     })
 
-//     //-> handeling error, in read stream using "error" event.
+    //-> handeling error, in read stream using "error" event.
 //     readable.on("error" , err=>{
 //         console.log(err);
 //         err.statusCode = 500 ;
 //         res.end("file not found");
 //     })
-//     //->  Using this method is better than "method 1" , as it saves more memory compared to "method 1" . But there is a issue here i.e.  the speed of reading the file by the disk is faster, so data is read faster but the response of writing data is slow. This problem is called "Backpresser" , where reading of data is faster but writing is slower. So to solve this problem we will use "method 3" .
+    //->  Using this method is better than "method 1" , as it saves more memory compared to "method 1" . But there is a issue here i.e.  the speed of reading the file by the disk is faster, so data is read faster but the response of writing data is slow. This problem is called "Backpresser" , where reading of data is faster but writing is slower. So to solve this problem we will use "method 3" .
 // })
 
 //========================= method 3 (using pipe() method) =========================
 server.on("request" , (req , res)=>{
     const readable = fs.createReadStream(`${__dirname}/streamFile.txt`);
-    readable.pipe(res) ;//--> the pipe() method acceps whole response object as argument as does all the response work of "method 2" internally.
+    readable.pipe(res) ;//--> the pipe() method accepts whole response object as argument and does all the response work of "method 2" internally.
 })
 //--> The "backpresser" problem is solved by the "pipe()" method, As it balances the speed of reading and writing. In  "pipe()" method , internally it is doing all the work of "method 2" plus maintaining the speed of reading the file, and writing the file as a response to the user .
 

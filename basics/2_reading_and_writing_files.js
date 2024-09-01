@@ -2,7 +2,7 @@ const fs = require("fs"); //! Here "fs" means file system. It is module in nodej
 // console.log(fs);
 
 
-//!              fs.readFileSync("file path namefrom where you want to read data" , "encoding techinque")
+//!              fs.readFileSync("file path name from where you want to read data" , "encoding techinque")
 const fileData = fs.readFileSync("./2_txt_files/prakash.txt" , "utf-8");
 console.log(fileData);
 //! "utf-8" is encoding technique, which converts the "text" into "8-bit binary format", so computer can understand it, and decodes it when user tries to read the file and displays in the form of the text in screen.

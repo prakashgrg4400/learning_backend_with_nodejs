@@ -4,7 +4,7 @@ const http = require("http");//! http module will help us create server
 //!==>creating server.
 const server = http.createServer((req , res)=>{
     // console.log(req.url);
-    let pathname = req.url; //! This re.url will store the route path information applied in the browser. For eg:- In the url "http://127.0.0.1:8000/overview" , "req.url" will store "overview" . There can be any name instead of "overview" in "http://127.0.0.1:8000/overview"
+    let pathname = req.url; //! This req.url will store the route path information applied in the browser. For eg:- In the url "http://127.0.0.1:8000/overview" , "req.url" will store "overview" . There can be any name instead of "overview" in "http://127.0.0.1:8000/overview"
     if(pathname==="/" || pathname==="/overview")
     {
         //!==> Displaying different response for different routes as shown below.

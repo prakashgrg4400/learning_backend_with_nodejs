@@ -8,4 +8,4 @@
 
 //==> when you are inside node environment, than by pressing "tab" kewboard ones or twice , will display you all the predefined global variables.
 
-//==> when you do 5+7 in the console than result will be "12".Than nes time if you do "_+8". Than the result will be "20" . It is because in terminal, "_" or underscore means previous value.
+//==> when you do 5+7 in the console than result will be "12".Than next time if you do "_+8". Than the result will be "20" . It is because in terminal, "_" or underscore means previous value.

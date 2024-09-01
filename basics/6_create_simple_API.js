@@ -8,7 +8,7 @@ const replaceTemplate = require('./modules/replaceTemplate');
 const data = fs.readFileSync(`${__dirname}/6_dev_data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
-//===> Below 2 line code is just to show that how we third party libraries using documentation.
+//===> Below 2 line code is just to show that how we use third party libraries using documentation.
 const slug = dataObj.map((el) => slugify(el.productName, { lower: true }));
 console.log(slug);
 
@@ -93,7 +93,7 @@ server.listen(8000, '127.0.0.1', () => {
 });
 
 //!==> After completing our small project "node farm" , we deep dived into npm i.e. "node package manager" which is used to manage the packages in our node.
-//!==> A package.jsom file stores the information of our project, and we can initialize it using npm command "npm init" , which create our "package.json" file for our project .
+//!==> A package.json file stores the information of our project, and we can initialize it using npm command "npm init" , which create our "package.json" file for our project .
 //!==> Using node we can install different types of packages or library or modules.
 //!==> There are two types of packages. They are :-
 //! 1) Simple or regular dependencies packages --> Our project depends on these packages to run.
@@ -101,9 +101,9 @@ server.listen(8000, '127.0.0.1', () => {
 
 //!==> packages added.    "npm install slugify" --> it is simple dependencies
 //!                      "npm install nodemon --save-dev" --> it is development dependencies .
-//!==> we have installed above libraries in a single folder locally. so to run nodemon whci helps us to restart our server, each tme our code changes. We have to create a script in "package.json" , where "start":"nodemon 6_create_simple_API.js" inside "scripts" . Than you can run this command in terminal using "npm run start" . But you can give any name instaed of "start" inside "scripts" and depending upon that name you use it in the terminal accordingly.
+//!==> we have installed above libraries in a single folder locally. so to run nodemon which helps us to restart our server, each tme our code changes. We have to create a script in "package.json" , where "start":"nodemon 6_create_simple_API.js" inside "scripts" . Than you can run this command in terminal using "npm run start" . But you can give any name instaed of "start" inside "scripts" and depending upon that name you use it in the terminal accordingly.
 
-//!==> But if you want to install "nodemon" package for every project, than you can install this package globally in your project using the commanf line "npm install nodemon --global". Now your package is installed globally. You dont have to update your package.json "scripts" folder anymore. But you can use it directly in the terminal by using the keyword "nodemon file_name". It will start the server automatically.
+//!==> But if you want to install "nodemon" package for every project, than you can install this package globally in your project using the command line "npm install nodemon --global". Now your package is installed globally. You dont have to update your package.json "scripts" folder anymore. But you can use it directly in the terminal by using the keyword "nodemon file_name". It will start the server automatically.
 
 //!=============== slugify ================
 //! ==> now here we will implement sulgify i.e. third party library by reading documnetation.
@@ -114,7 +114,7 @@ server.listen(8000, '127.0.0.1', () => {
 //!                                                          "slugify": "^1.6.6"
 //!                                                        },
 //! -->  where "^1.6.6" , last 6 means "patch" , middle 6 means "minor" , and first 1 means "major". And the beginning symbol i.e.   "^" means update our npm package but only minor and patch updates. There are two more symbols used beside "^" . They are "~" which says only update "patch" update. And the last one is "*" , which says update all i.e. major,minor and patch . By default our node manager always puts "^" symbol infront of our major,minor and patch version. But it is good to use patch symbol i.e. "~" ,as it will not really affect our code that much.
-//! --> Now lets discuss about major,minor and patch. "patch" means those updates which is related with fixing errors. Suppose we have a version "1.2.3" . And recently we found a bug and solved the bug. Than our package version will be change from "1.2.3" to "1.2.4" . So patch is related to those updates which deals with fixing of bugs.    "minor" deals with adding of new features on top of our old packages code, without modifying old codes. But using "^" for minor update is not good, as the new feature might contain bugs and may lead to breakdown of our aplication.  Finally we have "major" where we change the old codes of our packages heavily of modify the old code heavily within the package. So this is all the related to verion pf a package.
+//! --> Now lets discuss about major,minor and patch. "patch" means those updates which is related with fixing errors. Suppose we have a version "1.2.3" . And recently we found a bug and solved the bug. Than our package version will be change from "1.2.3" to "1.2.4" . So patch is related to those updates which deals with fixing of bugs.    "minor" deals with adding of new features on top of our old packages code, without modifying old codes. But using "^" for minor update is not good, as the new feature might contain bugs and may lead to breakdown of our aplication.  Finally we have "major" where we change the old codes of our packages heavily of modify the old code heavily within the package. So this is all the related to verion of a package.
 //! --> "npm outdated" , this will give a list of packages which are outdated in a table like structure.
 //! --> "npm install package_name@version" , this will help you install a package of your desired version. For eg:- we have a package named "slugify" . Suppose I dont want the latest version of "slugify" i.e. "1.6.6". than you can write your own version as  "npm install slugify@1.0.0" .
 //! --> "npm update slugify" , It will update you package to the latest version based on *,^,~ .
