@@ -12,21 +12,58 @@ mongoose
   .connect(db, {
     // mongoose
     // .connect(process.env.LOCAL_DATABASE, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true, // setting this true meanse, mongoose will use a new connection engine in mongodb, to create a stable connection with our database and application. 
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true, // setting this true meanse, mongoose will use a new connection engine in mongodb, to create a stable connection with our database and application.
   })
   .then((con) => {
-    console.log(con.connections);
+    // console.log(con.connections);
     console.log('connection successfull');
   });
 
+//!====> Creating schema for tours using mongoose .
+const tourSchema = new mongoose.Schema({
+  // name:Number        (OR below code)
+  name: {
+    type: String,
+    required: [true, 'A tour must have a name'], // first parameter is saying you cannot leave this field empty, second is error message.
+    unique: true,
+  },
+  rating: {
+    type: Number,
+    default: 4,
+  },
+  price: {
+    type: Number,
+    required: [true, 'A tour must have a price'],
+  },
+});
+
+//!====> Creating modal for tour
+const Tour = mongoose.model('Tour', tourSchema);
+
+//!====> Inserting data using tour modal .
+const testTour = new Tour({
+  name: 'Prakash Gurung',
+  // rating: 4.8,
+  price: 99,
+});
+
+//==> After connecting to the database , creating schema , than creating model of that schema, we insert data as shown above. Now we will save the data as shown below in database using "save()" method, which returns us  a promise.
+testTour
+  .save()
+  .then((document) => {
+    console.log(document);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 //====================================== environment variable ==============================
 //--> environment variable are global variables which determines in which environment our "node" or "express" app is working on i.e. "development environment" or "production environment" and many more. Environmet variable are also used for configuration purpose.
 
 // By default express sets the environment variable to "development mode" , so we will get development from below line of code in console.
 // console.log(app.get('env')); // this will show us the value environment variable inside express i.e. "development"
 
-console.log(process.env); // Node js have multiple environment variable inside its process core module, which works internally . We can see all the environment variable present inside node , by using "process.env" which will return us an object containing all the environment variable inside node.
+// console.log(process.env); // Node js have multiple environment variable inside its process core module, which works internally . We can see all the environment variable present inside node , by using "process.env" which will return us an object containing all the environment variable inside node.
 
 const port = process.env.PORT || 3000; // this is how we use "environment variable" .
 

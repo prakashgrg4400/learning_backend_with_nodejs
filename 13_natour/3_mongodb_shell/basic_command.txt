@@ -36,7 +36,7 @@ db.collection_name.find({ $or : [{price:{$lt:500}} , {rating:{$gt:4}}] }) ----> 
 db.collection_name.fincd({your condition here} , {name:1}) ----> the first object always defines the condition, and the second object is used which fields to be displayed. Since we wrote the name field only, so only name will be displayed.
 
 ========================================== update query =================================
-db.collection_name.updateOne({ rating:{$gte4.5} } , {$set:{name:"prakash"}})  -----> this query will upade the name of our document. The first object inside "updateOne()" is to specify which object to update, it is similar to filtering in "find()" method, the second object is to set the new value of the "field" , And to update the old values we use "$set" operator.
+db.collection_name.updateOne({ rating:{$gte4.5} } , {$set:{name: "prakash"}})  -----> this query will upade the name of our document. The first object inside "updateOne()" is to specify which object to update, it is similar to filtering in "find()" method, the second object is to set the new value of the "field" , And to update the old values we use "$set" operator.
 
 db.collection_name.updateMany({} , {})  --> Everything is similar to above query, the only difference is that if there is multiple documents which satisfies the condition written inside "first object" , than "updateMany()" will update all those multiple documents, but the "updateOne()" will only update the first one among those multiple documents .
 

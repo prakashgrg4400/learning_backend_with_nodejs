@@ -55,7 +55,7 @@
 // const getAllTours = (req, res) => {
 //   console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
 //   res.status(200).json({
-   //! doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
+//! doing simple "reponse formatting" , by adding our own data i.e. "status" and "result" .
 //     status: 'success',
 //     result: tours.length,
 //     data: {
@@ -65,13 +65,13 @@
 // };
 
 // const getTour = (req, res) => {
-  //! console.log(req.params); // the path variables or parameters are stored inside "req.params"
+//! console.log(req.params); // the path variables or parameters are stored inside "req.params"
 //   const id = Number(req.params.id); // by default id is in string, or  (req.params.id*1) does the same trick as Number().
 
 //   const tour = tours.find((el) => el.id === id); // searching the tour whose id is equal to path variable .
 
 //   if (!tour) {
-    //! Condition if id is not found inside "tours" .
+//! Condition if id is not found inside "tours" .
 //     return res.status(404).json({
 //       status: 'fail',
 //       message: 'Invalid id',
@@ -231,20 +231,19 @@
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const express = require('express');
-const morgan = require('morgan');// show us information related to request.
+const morgan = require('morgan'); // show us information related to request.
 const app = express();
 
 //------------------------------------ middlewares ----------------------------------------------------
 //--> All the middlewares will be written in this file .
-console.log(process.env.NODE_ENV);// even though we configured the environment variables in "server.js" , we can get access in all the other files too , it is because node uses the same process for all the files.
-if(process.env.NODE_ENV === "development")
-{
-  app.use(morgan('dev'));// Here we are specifying a task, that it should be executed when we are in "development environment" , if we are in production environment than this task will not be executed.
+console.log(process.env.NODE_ENV); // even though we configured the environment variables in "server.js" , we can get access in all the other files too , it is because node uses the same process for all the files.
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev')); // Here we are specifying a task, that it should be executed when we are in "development environment" , if we are in production environment than this task will not be executed.
 }
 
 app.use(express.json());
-app.use(express.static(`${__dirname}/public`))// To read a static file in express.js we use "express.static(file_path)" middleware function, which deals with reading static file. here "file_path" means the folder which stores all our static file but not the path of a static file. In this project our static files are in "public" folder, so we give this pathname to "static()" middleware function. Suppose you are searching for "/overview.html" , first express checks whether this path is defined in router or not. If it is not defined than it reads the "express.static()" middleware function and makes the folder whose path is written inside "static()" as a root path, and automatically searches for the static files i.e. html,css,js,images and renders them in the client side. Remember this middleware function only reads the "static file" , but not the folders. 
-// So if you use any of this path , than express is smart enough to read these files from "public" folder automatically. The path are:- "/overview.html"  ,  "/tour.html" , "/css/style.css" , "/img/favicon.png" and so on.  But if use folder name like "/img" , than you will not get anything as "/img" is not static file but it is a folde and the middleware function "express.static()" only reads static file. 
+app.use(express.static(`${__dirname}/public`)); // To read a static file in express.js we use "express.static(file_path)" middleware function, which deals with reading static file. here "file_path" means the folder which stores all our static file but not the path of a static file. In this project our static files are in "public" folder, so we give this pathname to "static()" middleware function. Suppose you are searching for "/overview.html" , first express checks whether this path is defined in router or not. If it is not defined than it reads the "express.static()" middleware function and makes the folder whose path is written inside "static()" as a root path, and automatically searches for the static files i.e. html,css,js,images and renders them in the client side. Remember this middleware function only reads the "static file" , but not the folders.
+// So if you use any of this path , than express is smart enough to read these files from "public" folder automatically. The path are:- "/overview.html"  ,  "/tour.html" , "/css/style.css" , "/img/favicon.png" and so on.  But if use folder name like "/img" , than you will not get anything as "/img" is not static file but it is a folde and the middleware function "express.static()" only reads static file.
 
 app.use((req, res, next) => {
   console.log('Hello from middleware');
@@ -264,8 +263,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
-module.exports = app ;
+module.exports = app;
 
 //!---> Here we structured our file. In above commented codes "middleware" , "router" , "route handler or controller" all of them in a single file "app.js" . But now we have created separate file router i.e. "routes file" where all the router are created , separate file for route handeler or controller i.e. "controllers" where we define all the route handlers and export them . And in app.js we will write our code related to "middleware" . And we even created our server in a separate file i.e. "server.js" .
 
-//!--> code execution flow ==> (server.js -> request -> app.js -> routes -> controller -> response) 
+//!--> code execution flow ==> (server.js -> request -> app.js -> routes -> controller -> response)
