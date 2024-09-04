@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 //===> connecting to the database using "mongoose" library. "mongoose.connect()" takes two parameters. The first one is a link to the database connection, which can be local database i.e. "mongodb://localhost:27017/database_name" or a database based on the cloud platform like "mongodb atlas" -> "mongodb+srv://taekwondo4400:<PW>@cluster0.ioafd.mongodb.net/natour?retryWrites=true&w=majority&appName=Cluster0" .
 const db = process.env.DATABASE.replace('<PW>', process.env.DATABASE_PASSWORD);
 console.log(db);
-mongoose
+mongoose 
   .connect(db, {
     // mongoose
     // .connect(process.env.LOCAL_DATABASE, {
