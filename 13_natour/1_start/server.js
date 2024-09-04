@@ -26,7 +26,7 @@ const tourSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'A tour must have a name'], // first parameter is saying you cannot leave this field empty, second is error message.
-    unique: true,
+    unique: true,// all names must be unique otherwise , we will get error.
   },
   rating: {
     type: Number,
