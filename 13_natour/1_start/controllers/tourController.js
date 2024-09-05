@@ -31,26 +31,42 @@ const Tour = require('./../models/tourModel');
 //   next();
 // }
 
-exports.getAllTours = (req, res) => {
-  console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
-  res.status(200).json({
-    status: 'success',
-    // result: tours.length,
-    data: {
-      tours: tours,
-    },
-  });
+exports.getAllTours = async(req, res) => {
+ try{
+     const allTours = await Tour.find() ; // It works in the same manner , as we wrote query in the mongodb shell.
+     res.status(200).json({
+      status:"success",
+      length : allTours.length ,
+      data:{
+        allTours:allTours
+      }
+     })
+ }catch(err){
+     res.status(400).json({
+      status:"failed" ,
+      message:err,
+     })
+ }
 };
 
-exports.getTour = (req, res) => {
+exports.getTour =async (req, res) => {
   // console.log(req.params); // the path variables or parameters are stored inside "req.params"
-  const tour = tours.find((tour)=>tour.id===(req.params.id*1))
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: tour,
-    },
-  });
+  try {
+    const tour = await Tour.findById(req.params.id)
+    // const tour = await Tour.find({"_id" : req.params.id}) // Both of above and this line of code does the same work. To make our work easier, mongoose provides us with these methods predefined inside "models" .
+
+    res.status(200).json({
+      status:"success",
+      data:{
+        tour:tour
+      }
+    })
+  } catch (error) {
+    res.status(404).json({
+      status:"fail",
+      message:error
+    })
+  }
 };
 
 exports.createTour = async(req, res) => {
