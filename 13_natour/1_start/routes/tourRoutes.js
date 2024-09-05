@@ -9,7 +9,7 @@ const router = express.Router(); // this will return a middleware funtion i.e. r
 //   console.log(`Tour id is : ${val}`);
 //   next();
 // })
-router.param('id', tourController.checkId);
+// router.param('id', tourController.checkId);
 
 // multiple middleware chaining.
 router
