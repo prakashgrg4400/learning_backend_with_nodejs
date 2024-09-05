@@ -1,4 +1,3 @@
-
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const express = require('express');
@@ -7,7 +6,7 @@ const app = express();
 
 //------------------------------------ middlewares ----------------------------------------------------
 //--> All the middlewares will be written in this file .
-console.log(process.env.NODE_ENV); 
+console.log(process.env.NODE_ENV);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

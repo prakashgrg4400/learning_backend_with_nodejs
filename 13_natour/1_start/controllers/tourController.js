@@ -19,17 +19,17 @@ const Tour = require('./../models/tourModel');
 //   next() ;
 // }
 
-exports.checkBody = (req , res , next)=>{
-  console.log(req.body);
-  if(!req.body.name || !req.body.price)
-  {
-    return res.status(404).json({
-      status:"fail",
-      message:"name or price not found"
-    })
-  }
-  next();
-}
+// exports.checkBody = (req , res , next)=>{
+//   console.log(req.body);
+//   if(!req.body.name || !req.body.price)
+//   {
+//     return res.status(404).json({
+//       status:"fail",
+//       message:"name or price not found"
+//     })
+//   }
+//   next();
+// }
 
 exports.getAllTours = (req, res) => {
   console.log(req.Mytime); // this is a proof that middleware are executed in first come first serve pattern.
@@ -53,10 +53,28 @@ exports.getTour = (req, res) => {
   });
 };
 
-exports.createTour = (req, res) => {
-  // const tourId = tours[tours.length - 1].id + 1;
-  // const newTour = Object.assign({ id: tourId }, req.body);
-  // tours.push(newTour);
+exports.createTour = async(req, res) => {
+  // const newTour = new Tour({});
+  // newTour.sace() // By using above these steps we used to send data to mongodb and save it using save() method which is predefined inside a document. But we can do in a more simpler and effieient way by directlt using the model instead of using document to save the data as shown below.
+
+
+   // Tour is our model , and we will directly use this model predefined function i.e. "create()" which will create and save our document in the mongodb. We will use try and catch to handle the error.
+  try {
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status:"success",
+      data : {
+        tour:newTour
+      }
+    })
+  } catch (error) {
+     res.status(400).json({
+      status:"fail",
+      // message:error
+      message:"Invalid input data"
+     })
+  }
+
   
 };
 
