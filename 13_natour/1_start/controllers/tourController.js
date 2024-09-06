@@ -118,15 +118,18 @@ exports.updateTour = async(req, res) => {
   }
 };
 
-exports.deleteTour = (req, res) => {
-  // if (req.params.id * 1 >= tours.length) { // this task is done by params middleware
-  //   return res.status(404).json({
-  //     status: 'fail',
-  //     message: 'invalid id',
-  //   });
-  // }
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+// After deleting a data, its a good practice not to send anything to the clent.
+exports.deleteTour = async(req, res) => {
+  try{
+    await Tour.findByIdAndDelete(req.params.id );// this method will return a query and await will wait until the data is deleted successfully.
+    res.status(200).json({
+      status:"success",
+      data:null
+    })
+  }catch(error){
+    res.status(404).json({
+      status:"fail",
+      message:error
+    })
+  }
 };
