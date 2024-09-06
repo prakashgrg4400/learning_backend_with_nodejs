@@ -71,7 +71,7 @@ exports.getTour =async (req, res) => {
 
 exports.createTour = async(req, res) => {
   // const newTour = new Tour({});
-  // newTour.sace() // By using above these steps we used to send data to mongodb and save it using save() method which is predefined inside a document. But we can do in a more simpler and effieient way by directlt using the model instead of using document to save the data as shown below.
+  // newTour.save() // By using above these steps we used to send data to mongodb and save it using save() method which is predefined inside a document. But we can do in a more simpler and effieient way by directlt using the model instead of using document to save the data as shown below.
 
 
    // Tour is our model , and we will directly use this model predefined function i.e. "create()" which will create and save our document in the mongodb. We will use try and catch to handle the error.
@@ -94,20 +94,28 @@ exports.createTour = async(req, res) => {
   
 };
 
-exports.updateTour = (req, res) => {
-  // if (req.params.id >= tours.length) { // this task is done by params middleware
-  //   return res.status(404).json({
-  //     status: 'fail',
-  //     message: 'Invalid id',
-  //   });
-  // }
+// We can use "put" or "patch" to update our data. "put" method will replace our whole old data with the new data . "patch" method will only replace the part of data(document) , which news to be updated without replacing the whole data.
+exports.updateTour = async(req, res) => {
+  try{
+    // first parameter searches for the document to be updated, second parameter is the document part which we want to update, third parameter is an object . Using this method will return us "query object"
+    const tour = await Tour.findByIdAndUpdate(req.params.id , req.body , {
+      new:true , // it says that return the newly updated object, instead of the original old object.
+      runValidators:true// it says after the object is successfully updated, compare or validate it with the schema.
+    })
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Your updated tour herer>',
-    },
-  });
+    res.status(200).json({
+      status:"success",
+      data:{
+        tour
+      }
+    })
+  }
+  catch(error){
+    res.status(404).json({
+      status:"fail" ,
+      message:error 
+    })
+  }
 };
 
 exports.deleteTour = (req, res) => {
