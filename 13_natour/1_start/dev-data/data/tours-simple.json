@@ -133,13 +133,6 @@
     "imageCover": "tour-9-cover.jpg",
     "images": ["tour-9-1.jpg", "tour-9-2.jpg", "tour-9-3.jpg"],
     "startDates": ["2021-12-16,10:00", "2022-01-16,10:00", "2022-12-12,10:00"]
-  },
-  {
-    "id": 9,
-    "name": "the danger river testing",
-    "difficulty": "medium",
-    "price": 1000
-  },
-  { "id": 10, "name": "testing", "difficulty": "hard", "price": 0 },
-  { "id": 11, "name": "prakash", "difficulty": "hard", "price": 100 }
+  }
+  
 ]

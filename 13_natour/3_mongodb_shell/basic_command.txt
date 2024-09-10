@@ -48,4 +48,4 @@ db.collection_name.replaceMany({ rating:{$gte4.5} } , {$set:{name:"prakash"}})  
 =========================================== delete query ===============================
 db.collection.deleteMany({condtion_here})  --------->  This query will delete the documents inside you collection. Inside "deleteMany()" we will pass the condition similar to "find()" method to specify which method to delete, it is same for "deleteOne()" method too. 
 
-db.collection_name.deleteManu({})   --------------->  If you just pass an "empty object" inside deleteMany() method than all the data present inside that collection will be deleted permanently.
+db.collection_name.deleteMany({})   --------------->  If you just pass an "empty object" inside deleteMany() method than all the data present inside that collection will be deleted permanently.
