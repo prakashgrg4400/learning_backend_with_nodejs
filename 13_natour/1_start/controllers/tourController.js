@@ -31,105 +31,117 @@ const Tour = require('./../models/tourModel');
 //   next();
 // }
 
-exports.getAllTours = async(req, res) => {
- try{
-     const allTours = await Tour.find() ; // It works in the same manner , as we wrote query in the mongodb shell.
-     res.status(200).json({
-      status:"success",
-      length : allTours.length ,
-      data:{
-        allTours:allTours
-      }
-     })
- }catch(err){
-     res.status(400).json({
-      status:"failed" ,
-      message:err,
-     })
- }
+exports.getAllTours = async (req, res) => {
+  //! ==> we can query inside mongoose in two ways, they are :-  (Both of those query works the same way, but we will use first one)
+  // Tour.find({duration:5 , difficulty:"easy"})
+  //  ====================== OR =======================
+  // Tour.find().where("duration").equals(5).where("difficulty").equals("easy") ;
+  try {
+    //!==> We send search parameters in our "routes" ,  so to get access to those search params, we use "req.query" . And node will give us an object of those search params in a key value pair. These search parameters are used for filtering purposes. You can console and see the data as shown below.
+    // console.log(req.query);
+
+    //!==> But there may be other parameters beside filtering one, such as for page , linmit , sort , fields. So if we will use normal query string like find() , than we will not get any result. So we will filter our search paramas by excluding those extra params as shown below.
+    // const queryObj = req.query // if we do this and change "queryObj" , than data inside "req.query" will also change because "queryObj" is only storing the refernce og object "req.query" .
+    const queryObj = { ...req.query };
+    const excluded = ['page', 'limit', 'sort', 'fields'];
+
+    //!==> the delete operator deletes a property from an object, and if deletion is success it returns "true" otherwise "false" .
+    excluded.forEach((excludeParam) => delete queryObj[excludeParam]);
+    console.log(req.query , queryObj);// Now we will use this new updated query for filtering data as shown below.
+
+    const allTours = await Tour.find(queryObj); // It works in the same manner , as we wrote query in the mongodb shell.
+    res.status(200).json({
+      status: 'success',
+      length: allTours.length,
+      data: {
+        allTours: allTours,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'failed',
+      message: err,
+    });
+  }
 };
 
-exports.getTour =async (req, res) => {
+exports.getTour = async (req, res) => {
   // console.log(req.params); // the path variables or parameters are stored inside "req.params"
   try {
-    const tour = await Tour.findById(req.params.id)
+    const tour = await Tour.findById(req.params.id);
     // const tour = await Tour.find({"_id" : req.params.id}) // Both of above and this line of code does the same work. To make our work easier, mongoose provides us with these methods predefined inside "models" .
 
     res.status(200).json({
-      status:"success",
-      data:{
-        tour:tour
-      }
-    })
+      status: 'success',
+      data: {
+        tour: tour,
+      },
+    });
   } catch (error) {
     res.status(404).json({
-      status:"fail",
-      message:error
-    })
+      status: 'fail',
+      message: error,
+    });
   }
 };
 
-exports.createTour = async(req, res) => {
+exports.createTour = async (req, res) => {
   // const newTour = new Tour({});
   // newTour.save() // By using above these steps we used to send data to mongodb and save it using save() method which is predefined inside a document. But we can do in a more simpler and effieient way by directlt using the model instead of using document to save the data as shown below.
 
-
-   // Tour is our model , and we will directly use this model predefined function i.e. "create()" which will create and save our document in the mongodb. We will use try and catch to handle the error.
+  // Tour is our model , and we will directly use this model predefined function i.e. "create()" which will create and save our document in the mongodb. We will use try and catch to handle the error.
   try {
     const newTour = await Tour.create(req.body);
     res.status(201).json({
-      status:"success",
-      data : {
-        tour:newTour
-      }
-    })
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
   } catch (error) {
-     res.status(400).json({
-      status:"fail",
+    res.status(400).json({
+      status: 'fail',
       // message:error
-      message:"Invalid input data"
-     })
+      message: 'Invalid input data',
+    });
   }
-
-  
 };
 
 // We can use "put" or "patch" to update our data. "put" method will replace our whole old data with the new data . "patch" method will only replace the part of data(document) , which news to be updated without replacing the whole data.
-exports.updateTour = async(req, res) => {
-  try{
+exports.updateTour = async (req, res) => {
+  try {
     // first parameter searches for the document to be updated, second parameter is the document part which we want to update, third parameter is an object . Using this method will return us "query object"
-    const tour = await Tour.findByIdAndUpdate(req.params.id , req.body , {
-      new:true , // it says that return the newly updated object, instead of the original old object.
-      runValidators:true// it says after the object is successfully updated, compare or validate it with the schema.
-    })
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // it says that return the newly updated object, instead of the original old object.
+      runValidators: true, // it says after the object is successfully updated, compare or validate it with the schema.
+    });
 
     res.status(200).json({
-      status:"success",
-      data:{
-        tour
-      }
-    })
-  }
-  catch(error){
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
     res.status(404).json({
-      status:"fail" ,
-      message:error 
-    })
+      status: 'fail',
+      message: error,
+    });
   }
 };
 
 // After deleting a data, its a good practice not to send anything to the clent.
-exports.deleteTour = async(req, res) => {
-  try{
-    await Tour.findByIdAndDelete(req.params.id );// this method will return a query and await will wait until the data is deleted successfully.
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndDelete(req.params.id); // this method will return a query and await will wait until the data is deleted successfully.
     res.status(200).json({
-      status:"success",
-      data:null
-    })
-  }catch(error){
+      status: 'success',
+      data: null,
+    });
+  } catch (error) {
     res.status(404).json({
-      status:"fail",
-      message:error
-    })
+      status: 'fail',
+      message: error,
+    });
   }
 };
