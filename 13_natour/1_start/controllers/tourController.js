@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Tour = require('./../models/tourModel');
+const { json } = require('express');
 
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
@@ -42,14 +43,37 @@ exports.getAllTours = async (req, res) => {
 
     //!==> But there may be other parameters beside filtering one, such as for page , linmit , sort , fields. So if we will use normal query string like find() , than we will not get any result. So we will filter our search paramas by excluding those extra params as shown below.
     // const queryObj = req.query // if we do this and change "queryObj" , than data inside "req.query" will also change because "queryObj" is only storing the refernce og object "req.query" .
+    //==================== filtering ======================
     const queryObj = { ...req.query };
     const excluded = ['page', 'limit', 'sort', 'fields'];
 
     //!==> the delete operator deletes a property from an object, and if deletion is success it returns "true" otherwise "false" .
     excluded.forEach((excludeParam) => delete queryObj[excludeParam]);
+
     console.log(req.query , queryObj);// Now we will use this new updated query for filtering data as shown below.
 
-    const allTours = await Tour.find(queryObj); // It works in the same manner , as we wrote query in the mongodb shell.
+    //!==> find() method is way of writing query, to communicate with database, and this method returns us a "query object" , and using that query object , we can perform chaining as shown above in line 38. There are other methods to like gt() , gte() , lt() , lte() , sort() etc and many more. But if we consume the "queryObject" before applying those methods as shown below than we cant do anything after the consumption is finished, So we will use these methods by storing the queryObject before consuming it as shown below from line     .
+    // const allTours = await Tour.find(queryObj); // It works in the same manner , as we wrote query in the mongodb shell.
+
+    //=========================== Advanced filtering ===============================
+    //--> basic mongodb query ==> { difficulty: 'easy', duration: { $gte: '5' } }
+    //--> after applying operator in route ===> { difficulty: 'easy', duration: { gte: '5' } }
+    //--->  So now we need to convert the second query into first one by adding "$". And the second query is stored inside "queryObj"
+     let queryStr = JSON.stringify(queryObj);
+     console.log(queryStr);
+     //--> replacing the operators gt, gte , lt , lte  with $gt , $gte , $lt , $lte using regular expression .
+     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g , match=>`$${match}`);// replace method also accepts callback function, and the "match" stores the data found which needs to be replaced.
+     console.log(JSON.parse(queryStr));
+ 
+    // const query = Tour.find(queryObj);// storing object returned by query i.e. find().
+    const query = Tour.find(JSON.parse(queryStr));
+
+
+    // execute query
+    const allTours = await query ;
+
+
+    //   sending  response
     res.status(200).json({
       status: 'success',
       length: allTours.length,
