@@ -77,7 +77,12 @@ const server = http.createServer((req, res) => {
             //!==> 200 status code shows that the response is successfully delieverd without any error.
             'Content-type': 'application/json', //!==> This header data show what type of data will be displayed in the screen as a response i.e. "json" data.
         });
-        res.end(data);
+        res.end(
+            JSON.stringify({
+                message: 'api',
+            })
+        );
+        // res.end(data);
         // });
         //!====================================== Error page ======================================
     } else {
