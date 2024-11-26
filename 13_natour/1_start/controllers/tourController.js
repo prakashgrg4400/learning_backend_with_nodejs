@@ -78,7 +78,7 @@ exports.getAllTours = async (req, res) => {
       query = query.sort('-createdAt'); // creating a default sorting based on tours created in case user doesnt sort the tours .
     }
 
-    //============================ Fields =================================
+    //============================ Fields limiting =================================
     //!==> Fields means displaying only limited data to the user, which are actually required by the user instead of providing all the data every time user request for the data. "http://127.0.0.1:8000/api/v1/tours?fields=name,duration,price,difficulty"
     if (req.query.fields) {
       const fieldQuery = req.query.fields.split(',').join(' '); // "name duration price difficulty"
@@ -87,6 +87,19 @@ exports.getAllTours = async (req, res) => {
       query = query.select('-__v'); // this field is given created by mongoose, and it uses this field internally . So we no need to include this field.
       //!==> We can also exclude a field in the schema, Go to "tourModel.js" and there you can see that we have excluded it using "select : false" , but if you want to overwrite this than you can use "+" sign same like "-" while sending query .
     }
+
+    //============================== Pagination ==================================
+    //==> http://127.0.0.1:8000/api/v1/tours?page=2&limit=10 ==> Here limit means that on each page there will be only 10 documents(data) .
+    let page = req.query.page * 1; // its a trick to change string to number.
+    let pageDataLimit = req.query.limit * 1;
+    let dataSkip = (page - 1) * pageDataLimit; // This is a formula to calculate how many datas should be escaped if one page has a certain data limit.
+    //! query = query.skip(10).limit(10); ==> skip says that leave 10 datas and continue from the 11th data. And limit says that only 10 data is allowed to display, so 11th to 20th data will be displayed.
+    console.log('documents => ', await Tour.countDocuments());
+    let totalDocuments = await Tour.countDocuments(); // counts total number of documents, returns a promise.
+    if (dataSkip >= totalDocuments) {
+      throw new Error('No more data available');
+    }
+    query = query.skip(dataSkip).limit(pageDataLimit);
 
     // execute query
     const allTours = await query;
