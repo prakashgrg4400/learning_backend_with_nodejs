@@ -39,10 +39,11 @@ exports.getAllTours = async (req, res) => {
   // Tour.find().where("duration").equals(5).where("difficulty").equals("easy") ;
   try {
     //!==> We send search parameters in our "routes" ,  so to get access to those search params, we use "req.query" . And node will give us an object of those search params in a key value pair. These search parameters are used for filtering purposes. You can console and see the data as shown below.
-    // console.log(req.query);
+    console.log(req.query);
+    console.log('prakash');
 
     //!==> But there may be other parameters beside filtering one, such as for page , linmit , sort , fields. So if we will use normal query string like find() , than we will not get any result. So we will filter our search paramas by excluding those extra params as shown below.
-    // const queryObj = req.query // if we do this and change "queryObj" , than data inside "req.query" will also change because "queryObj" is only storing the refernce og object "req.query" .
+    // const queryObj = req.query // if we do this and change "queryObj" , than data inside "req.query" will also change because "queryObj" is only storing the refernce of object "req.query" .
     //==================== filtering ======================
     const queryObj = { ...req.query };
     const excluded = ['page', 'limit', 'sort', 'fields'];
@@ -50,7 +51,7 @@ exports.getAllTours = async (req, res) => {
     //!==> the delete operator deletes a property from an object, and if deletion is success it returns "true" otherwise "false" .
     excluded.forEach((excludeParam) => delete queryObj[excludeParam]);
 
-    console.log(req.query , queryObj);// Now we will use this new updated query for filtering data as shown below.
+    console.log(req.query, queryObj); // Now we will use this new updated query for filtering data as shown below.
 
     //!==> find() method is way of writing query, to communicate with database, and this method returns us a "query object" , and using that query object , we can perform chaining as shown above in line 38. There are other methods to like gt() , gte() , lt() , lte() , sort() etc and many more. But if we consume the "queryObject" before applying those methods as shown below than we cant do anything after the consumption is finished, So we will use these methods by storing the queryObject before consuming it as shown below from line     .
     // const allTours = await Tour.find(queryObj); // It works in the same manner , as we wrote query in the mongodb shell.
@@ -59,19 +60,25 @@ exports.getAllTours = async (req, res) => {
     //--> basic mongodb query ==> { difficulty: 'easy', duration: { $gte: '5' } }
     //--> after applying operator in route ===> { difficulty: 'easy', duration: { gte: '5' } }
     //--->  So now we need to convert the second query into first one by adding "$". And the second query is stored inside "queryObj"
-     let queryStr = JSON.stringify(queryObj);
-     console.log(queryStr);
-     //--> replacing the operators gt, gte , lt , lte  with $gt , $gte , $lt , $lte using regular expression .
-     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g , match=>`$${match}`);// replace method also accepts callback function, and the "match" stores the data found which needs to be replaced.
-     console.log(JSON.parse(queryStr));
- 
+    let queryStr = JSON.stringify(queryObj);
+    console.log(queryStr);
+    //--> replacing the operators gt, gte , lt , lte  with $gt , $gte , $lt , $lte using regular expression .
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`); // replace method also accepts callback function, and the "match" stores the data found which needs to be replaced.
+    console.log(JSON.parse(queryStr));
+
     // const query = Tour.find(queryObj);// storing object returned by query i.e. find().
-    const query = Tour.find(JSON.parse(queryStr));
+    let query = Tour.find(JSON.parse(queryStr));
 
-
+    //============================ Sorting =================================
+    //! http://127.0.0.1:8000/api/v1/tours?sort=-price  or   http://127.0.0.1:8000/api/v1/tours?sort=price ==> if you want to sort the data based on price in ascending order than you can just pass the query params as "sort=price" , else if you want to sort in descending order than you can pass the query params in "sort=-price" . In case if both tour have same price and in those you want another deciding factor to sort , than you can add another key name based on which you wanna sort as shown below "http://127.0.0.1:8000/api/v1/tours?sort=-price,ratingsAverage" . We have both "price" and "ratingsAverage" as property inside out tour .
+    if (req.query.sort) {
+      let sortBy = req.query.sort.split(',').join(' '); //
+      query = query.sort(sortBy); // query.sort("-price") or query.sort("price") or query.sort("-price ratingsAverage"); if we are sending two properties based on which tour should be sorted, than at first tour will be sorted based on "price" property. But a certain tours have same price than only after that those tours will be sorted based on second property i.e. "ratingsAverage" . And you can handle wheter the data should be in ascending or descending order using "-".
+    } else {
+      query = query.sort('-createdAt'); // creating a default sorting based on tours created in case user doesnt sort the tours .
+    }
     // execute query
-    const allTours = await query ;
-
+    const allTours = await query;
 
     //   sending  response
     res.status(200).json({
@@ -90,7 +97,7 @@ exports.getAllTours = async (req, res) => {
 };
 
 exports.getTour = async (req, res) => {
-  // console.log(req.params); // the path variables or parameters are stored inside "req.params"
+  console.log(req.params); // the path variables or parameters are stored inside "req.params"
   try {
     const tour = await Tour.findById(req.params.id);
     // const tour = await Tour.find({"_id" : req.params.id}) // Both of above and this line of code does the same work. To make our work easier, mongoose provides us with these methods predefined inside "models" .
@@ -131,7 +138,7 @@ exports.createTour = async (req, res) => {
   }
 };
 
-// We can use "put" or "patch" to update our data. "put" method will replace our whole old data with the new data . "patch" method will only replace the part of data(document) , which news to be updated without replacing the whole data.
+// We can use "put" or "patch" to update our data. "put" method will replace our whole old data with the new data . "patch" method will only replace the part of data(document) , which needs to be updated without replacing the whole data.
 exports.updateTour = async (req, res) => {
   try {
     // first parameter searches for the document to be updated, second parameter is the document part which we want to update, third parameter is an object . Using this method will return us "query object"
