@@ -6,7 +6,7 @@ const tourSchema = new mongoose.Schema({
     type: String,
     required: [true, 'A tour must have a name'], // first parameter is saying you cannot leave this field empty, second is error message.
     unique: true, // all names must be unique otherwise , we will get error.
-    trim:true
+    trim: true,
   },
   duration: {
     type: Number,
@@ -35,22 +35,23 @@ const tourSchema = new mongoose.Schema({
   summary: {
     type: String,
     trim: true,
-    required:[true , "A tour must have a summary"]
+    required: [true, 'A tour must have a summary'],
   },
-  description:{
-    type:String,
-    trim:true
+  description: {
+    type: String,
+    trim: true,
   },
-  imageCover:{
-    type:String,
-    required:[true , "Atour must have a cover image"]
+  imageCover: {
+    type: String,
+    required: [true, 'Atour must have a cover image'],
   },
-  images:[String],// storing multiple images--> i.e. name of images in an array
-  createdAt:{
-    type:Date,
-    default:Date.now()
+  images: [String], // storing multiple images--> i.e. name of images in an array
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    select: false, // excluding this field .
   },
-  startDates:[Date]
+  startDates: [Date],
 });
 
 //!====> Creating modal for tour

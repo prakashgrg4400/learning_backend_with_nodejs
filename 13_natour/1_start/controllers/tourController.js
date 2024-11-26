@@ -77,6 +77,17 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.sort('-createdAt'); // creating a default sorting based on tours created in case user doesnt sort the tours .
     }
+
+    //============================ Fields =================================
+    //!==> Fields means displaying only limited data to the user, which are actually required by the user instead of providing all the data every time user request for the data. "http://127.0.0.1:8000/api/v1/tours?fields=name,duration,price,difficulty"
+    if (req.query.fields) {
+      const fieldQuery = req.query.fields.split(',').join(' '); // "name duration price difficulty"
+      query = query.select(fieldQuery); // "name duration price difficulty" ==> if fields are given in this manner than only these four fields are selected. but if use negative sign than it means exclude that field which contains "-" . For eg query.select("-name") --> This query says that include all the fields except name field .
+    } else {
+      query = query.select('-__v'); // this field is given created by mongoose, and it uses this field internally . So we no need to include this field.
+      //!==> We can also exclude a field in the schema, Go to "tourModel.js" and there you can see that we have excluded it using "select : false" , but if you want to overwrite this than you can use "+" sign same like "-" while sending query .
+    }
+
     // execute query
     const allTours = await query;
 
