@@ -35,8 +35,8 @@ const { json } = require('express');
 //!==> This middleware is used to provide a default data of tours based on "rating and price" , in case user hit this route
 exports.getTopTours = (req, res, next) => {
   req.query.limit = '5';
-  req.query.sort = '-ratingsAverage price';
-  req.query.fields = 'name ratingsAverage price';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,ratingsAverage,price';
   next();
 };
 
