@@ -32,6 +32,14 @@ const { json } = require('express');
 //   next();
 // }
 
+//!==> This middleware is used to provide a default data of tours based on "rating and price" , in case user hit this route
+exports.getTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage price';
+  req.query.fields = 'name ratingsAverage price';
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
   //! ==> we can query inside mongoose in two ways, they are :-  (Both of those query works the same way, but we will use first one)
   // Tour.find({duration:5 , difficulty:"easy"})

@@ -11,6 +11,10 @@ const router = express.Router(); // this will return a middleware funtion i.e. r
 // })
 // router.param('id', tourController.checkId);
 
+router
+  .route('/top-cheap-tours')
+  .get(tourController.getTopTours, tourController.getAllTours); // Here we are implementing "alias" i.e. a default data shown to the user if they hit this route, even though they didnt specified it. This route will give user top 5 routes based on rating and price. And those default query is set inside "getTopTours" middleware. As this middleware runs before "getAllTours" middleware.
+
 // multiple middleware chaining.
 router
   .route('/')
