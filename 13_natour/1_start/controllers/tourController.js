@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Tour = require('./../models/tourModel');
 const { json } = require('express');
+const APIFeatures = require('./../utils/apiFeatures');
 
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
@@ -47,70 +48,20 @@ exports.getAllTours = async (req, res) => {
   // Tour.find().where("duration").equals(5).where("difficulty").equals("easy") ;
   try {
     //!==> We send search parameters in our "routes" ,  so to get access to those search params, we use "req.query" . And node will give us an object of those search params in a key value pair. These search parameters are used for filtering purposes. You can console and see the data as shown below.
-    console.log(req.query);
-    console.log('prakash');
+    // console.log(req.query);
+    // console.log('prakash');
 
     //!==> But there may be other parameters beside filtering one, such as for page , linmit , sort , fields. So if we will use normal query string like find() , than we will not get any result. So we will filter our search paramas by excluding those extra params as shown below.
-    // const queryObj = req.query // if we do this and change "queryObj" , than data inside "req.query" will also change because "queryObj" is only storing the refernce of object "req.query" .
-    //==================== filtering ======================
-    const queryObj = { ...req.query };
-    const excluded = ['page', 'limit', 'sort', 'fields'];
 
-    //!==> the delete operator deletes a property from an object, and if deletion is success it returns "true" otherwise "false" .
-    excluded.forEach((excludeParam) => delete queryObj[excludeParam]);
-
-    console.log(req.query, queryObj); // Now we will use this new updated query for filtering data as shown below.
-
-    //!==> find() method is way of writing query, to communicate with database, and this method returns us a "query object" , and using that query object , we can perform chaining as shown above in line 38. There are other methods to like gt() , gte() , lt() , lte() , sort() etc and many more. But if we consume the "queryObject" before applying those methods as shown below than we cant do anything after the consumption is finished, So we will use these methods by storing the queryObject before consuming it as shown below from line     .
-    // const allTours = await Tour.find(queryObj); // It works in the same manner , as we wrote query in the mongodb shell.
-
-    //=========================== Advanced filtering ===============================
-    //--> basic mongodb query ==> { difficulty: 'easy', duration: { $gte: '5' } }
-    //--> after applying operator in route ===> { difficulty: 'easy', duration: { gte: '5' } }
-    //--->  So now we need to convert the second query into first one by adding "$". And the second query is stored inside "queryObj"
-    let queryStr = JSON.stringify(queryObj);
-    console.log(queryStr);
-    //--> replacing the operators gt, gte , lt , lte  with $gt , $gte , $lt , $lte using regular expression .
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`); // replace method also accepts callback function, and the "match" stores the data found which needs to be replaced.
-    console.log(JSON.parse(queryStr));
-
-    // const query = Tour.find(queryObj);// storing object returned by query i.e. find().
-    let query = Tour.find(JSON.parse(queryStr));
-
-    //============================ Sorting =================================
-    //! http://127.0.0.1:8000/api/v1/tours?sort=-price  or   http://127.0.0.1:8000/api/v1/tours?sort=price ==> if you want to sort the data based on price in ascending order than you can just pass the query params as "sort=price" , else if you want to sort in descending order than you can pass the query params in "sort=-price" . In case if both tour have same price and in those you want another deciding factor to sort , than you can add another key name based on which you wanna sort as shown below "http://127.0.0.1:8000/api/v1/tours?sort=-price,ratingsAverage" . We have both "price" and "ratingsAverage" as property inside out tour .
-    if (req.query.sort) {
-      let sortBy = req.query.sort.split(',').join(' '); //
-      query = query.sort(sortBy); // query.sort("-price") or query.sort("price") or query.sort("-price ratingsAverage"); if we are sending two properties based on which tour should be sorted, than at first tour will be sorted based on "price" property. But a certain tours have same price than only after that those tours will be sorted based on second property i.e. "ratingsAverage" . And you can handle wheter the data should be in ascending or descending order using "-".
-    } else {
-      query = query.sort('-createdAt'); // creating a default sorting based on tours created in case user doesnt sort the tours .
-    }
-
-    //============================ Fields limiting =================================
-    //!==> Fields means displaying only limited data to the user, which are actually required by the user instead of providing all the data every time user request for the data. "http://127.0.0.1:8000/api/v1/tours?fields=name,duration,price,difficulty"
-    if (req.query.fields) {
-      const fieldQuery = req.query.fields.split(',').join(' '); // "name duration price difficulty"
-      query = query.select(fieldQuery); // "name duration price difficulty" ==> if fields are given in this manner than only these four fields are selected. but if use negative sign than it means exclude that field which contains "-" . For eg query.select("-name") --> This query says that include all the fields except name field .
-    } else {
-      query = query.select('-__v'); // this field is given created by mongoose, and it uses this field internally . So we no need to include this field.
-      //!==> We can also exclude a field in the schema, Go to "tourModel.js" and there you can see that we have excluded it using "select : false" , but if you want to overwrite this than you can use "+" sign same like "-" while sending query .
-    }
-
-    //============================== Pagination ==================================
-    //==> http://127.0.0.1:8000/api/v1/tours?page=2&limit=10 ==> Here limit means that on each page there will be only 10 documents(data) .
-    let page = req.query.page * 1; // its a trick to change string to number.
-    let pageDataLimit = req.query.limit * 1;
-    let dataSkip = (page - 1) * pageDataLimit; // This is a formula to calculate how many datas should be escaped if one page has a certain data limit.
-    //! query = query.skip(10).limit(10); ==> skip says that leave 10 datas and continue from the 11th data. And limit says that only 10 data is allowed to display, so 11th to 20th data will be displayed.
-    console.log('documents => ', await Tour.countDocuments());
-    let totalDocuments = await Tour.countDocuments(); // counts total number of documents, returns a promise.
-    if (dataSkip >= totalDocuments) {
-      throw new Error('No more data available');
-    }
-    query = query.skip(dataSkip).limit(pageDataLimit);
+    //============================= Using class to implement the reusable features like "filter" , "sort" etc =======================
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .pagination()
+      .fields();
 
     // execute query
-    const allTours = await query;
+    const allTours = await features.query;
 
     //   sending  response
     res.status(200).json({
