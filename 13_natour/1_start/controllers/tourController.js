@@ -159,3 +159,46 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+//==> Below controller is used for aggregation pipeline. It is basically a collection of data(documents) , with a summary of all the data avaiable. pipeline refers to the process in which all the documents under goes through different phases such as "match" , "group" , "sort" etc. This stages can be repeated too. this aggregation pipeline is a feature of mongodb, and we can use this feature through mongoose .
+exports.getTourStats = async (req, res) => {
+  try {
+    console.log('prakash');
+    const stats = await Tour.aggregate([
+      { $match: { ratingsAverage: { $gte: 4 } } },
+      {
+        $group: {
+          //!==> This "_id" is used to group our data based on the value assigned to the "_id" . The values are the "field" name of a document .
+          // _id: 'all',
+          // _id: '$difficulty', // Now our documents will be grouped or separated based on difficulty level i.e. "hard" , "medium" , "difficulty" .
+          _id: { $toUpper: '$difficulty' }, // "$toUpper" is used to change the data to upper case .
+          numOfTour: { $sum: 1 },
+          numOfRating: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      { $sort: { avgPrice: 1 } }, // sorting is done based on the data present inside "$group" fields, but based on the present inside database i.e. documents . "1" = ascending order , "-1" = descending order
+      // { $sort: { avgPrice: -  1 } },
+
+      { $match: { _id: { $ne: 'EASY' } } }, // this is to show that a "stage" can be repeated .  And the execution proce is top to bottom i.e. $match --> $group --> $sort --> $match . "$ne" means "not equal to".
+    ]);
+
+    console.log('stats => ', stats);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    console.log('gurung');
+    res.status(404).json({
+      status: 'fail load',
+      message: err.message || err,
+    });
+  }
+};
