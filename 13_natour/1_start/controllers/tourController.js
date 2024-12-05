@@ -66,6 +66,7 @@ exports.getAllTours = async (req, res) => {
     //   sending  response
     res.status(200).json({
       status: 'success',
+      name: 'Prakash',
       length: allTours.length,
       data: {
         allTours: allTours,
@@ -199,6 +200,48 @@ exports.getTourStats = async (req, res) => {
     res.status(404).json({
       status: 'fail load',
       message: err.message || err,
+    });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    console.log(req.params);
+    let year = req.params.year * 1; //2021 ;
+    let plan = await Tour.aggregate([
+      { $unwind: '$startDates' },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lt: new Date(`${year + 1}-01-01`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numOfTour: { $sum: 1 },
+          tourNames: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      // {},
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan,
+      },
+    });
+  } catch (err) {
+    console.log('prakash => ', req.params);
+    res.status(404).json({
+      status: 'fail',
+      message: err,
     });
   }
 };
