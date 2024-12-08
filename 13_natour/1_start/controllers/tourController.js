@@ -209,7 +209,7 @@ exports.getMonthlyPlan = async (req, res) => {
     console.log(req.params);
     let year = req.params.year * 1; //2021 ;
     let plan = await Tour.aggregate([
-      { $unwind: '$startDates' },
+      { $unwind: '$startDates' }, // this stage helps us to create separate documents for all the values present inside an array
       {
         $match: {
           startDates: {
@@ -220,15 +220,23 @@ exports.getMonthlyPlan = async (req, res) => {
       },
       {
         $group: {
-          _id: { $month: '$startDates' },
-          numOfTour: { $sum: 1 },
-          tourNames: { $push: '$name' },
+          _id: { $month: '$startDates' }, // $month stage automatically filters only month from a date containing year-month-day
+          numOfTour: { $sum: 1 }, // we are adding all the tours occuring in same month based on "_id" .
+          tourNames: { $push: '$name' }, // $push stage helps us to create an array , push the name of tour .
         },
       },
       {
-        $addFields: { month: '$_id' },
+        $addFields: { month: '$_id' }, // If we want to add new field than we use this stage .
       },
-      // {},
+      {
+        $project: { _id: 0 }, // this stage helps us to decide which field to display . 0 for to hide the field, and 1 for showing the field
+      },
+      {
+        $sort: { numOfTour: -1 }, // here we are sorting the group of tours based on number of tours each month
+      },
+      {
+        $limit: 1, // this stage says how many documents we want to display i.e. 1 document in this case
+      },
     ]);
 
     res.status(200).json({
