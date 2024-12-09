@@ -117,7 +117,7 @@ exports.createTour = async (req, res) => {
     res.status(400).json({
       status: 'fail',
       // message:error
-      message: 'Invalid input data',
+      message: 'Invalid input data' + error,
     });
   }
 };
