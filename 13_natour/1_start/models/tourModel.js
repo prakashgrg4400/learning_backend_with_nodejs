@@ -55,6 +55,10 @@ const tourSchema = new mongoose.Schema(
       select: false, // excluding this field .
     },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true }, //By default res.json() doesnt includes virtual data, so if you want to display virtual data , than you can set this property to true .
@@ -73,7 +77,7 @@ tourSchema.virtual('durationWeek').get(function () {
 //!==> Both "pre" and "post" middleware runs only before ".save()" and ".create()" mongoose function where "save()" function saves the document in the database , and the "create()" function first creates the document and saves the document in the database after creating the document .
 tourSchema.pre('save', function (next) {
   console.log("Hello for 'pre' middleware", this);
-  this.slug = slugify(this.name, { lower: true }); // Here "this" object represents the document which is going to be saved in the database.
+  this.slug = slugify(this.name, { lower: true }); // Here "this" object represents the document which is going to be saved in the database. And we are using the "pre" middleware to make changes to our document before it is going to be saved in the databse .
   next();
 });
 
@@ -88,7 +92,31 @@ tourSchema.post('save', function (doc, next) {
   console.log('Post middleware --> ', doc);
   next();
 });
+
+//============================== Query middleware ===============================
+//==> This middle works for the "find" method which is used to filter our data based on the query object inserted inside it. But it will not run for other find methods like "findOne" , "findMany" etc. SO to make it work for all find methods we will use regular expression as shown below. Or we can create a "pre" query middleware for all the "find" methods but it is a tedious
+// tourSchema.pre('find', function (next) {
+//   console.log("Checking query middleware from 'Model' ");
+//   this.find({ secretTour: { $ne: true } }); // This middleware will be executed before the "find" query is executed. Here "this" is the query object .
+//   next();
+// });
+
+//==> Here we are using regular expression, so it will run for all the query function starting from "find" . The "this" object refers to the query object. And "docs" refers to the all the documents present inside our database . And we can get access to it after the query is executed successfully using "post" query middleware
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start}`);
+  // console.log(docs);// this docs is all the documents present inside our database .
+  next();
+});
+
 //!====> Creating modal for tour
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
+
+//===> There are four types of middleware in mongoose. They are "document middleware" , "aggregate middleware" , "query middleware" and "model middleware" .

@@ -60,6 +60,8 @@ exports.getAllTours = async (req, res) => {
       .pagination()
       .fields();
 
+      console.log("Checking query middleware from 'controller' ");
+
     // execute query
     const allTours = await features.query;
 
