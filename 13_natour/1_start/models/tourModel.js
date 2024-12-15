@@ -72,7 +72,7 @@ tourSchema.virtual('durationWeek').get(function () {
 // virtual are the data which is obtained by performing operations on existing data stored inside database. Virtual data are not stored inside databases. But it is rather used to derive or perform operations on data , without storing them in database.
 //==> virtuals:data which is derived from other fields(data) but is not stored inside database
 
-//========================= document middleware =====================
+//!========================= document middleware =====================
 // ==> this middleware runs before saving the document in database or after saving the document in database. The pre middleware function runs before storing the document in the database, in this case we can modify our document before saving in the database. The post middleware runs after the document is successfully stored inside database.
 //!==> Both "pre" and "post" middleware runs only before ".save()" and ".create()" mongoose function where "save()" function saves the document in the database , and the "create()" function first creates the document and saves the document in the database after creating the document .
 tourSchema.pre('save', function (next) {
@@ -93,7 +93,7 @@ tourSchema.post('save', function (doc, next) {
   next();
 });
 
-//============================== Query middleware ===============================
+//!============================== Query middleware ===============================
 //==> This middle works for the "find" method which is used to filter our data based on the query object inserted inside it. But it will not run for other find methods like "findOne" , "findMany" etc. SO to make it work for all find methods we will use regular expression as shown below. Or we can create a "pre" query middleware for all the "find" methods but it is a tedious
 // tourSchema.pre('find', function (next) {
 //   console.log("Checking query middleware from 'Model' ");
@@ -111,6 +111,13 @@ tourSchema.pre(/^find/, function (next) {
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start}`);
   // console.log(docs);// this docs is all the documents present inside our database .
+  next();
+});
+
+//!============================= Aggregate middleware =============================
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // Now we will add new "stage" in this pipeline which will be executed in the beginning of the pipeline stage, by adding new stage at the begining of the array using "unshift" method, which adds the data at the bginning if the array .
+  console.log('From Aggregae middleware ==> ', this.pipeline()); // Here "this" is the "aggregate object" . And inside this object there is a method called "pipeline" , which stores all our pipeline stages which we wrote in the "controller" for aggregation in an array format .
   next();
 });
 

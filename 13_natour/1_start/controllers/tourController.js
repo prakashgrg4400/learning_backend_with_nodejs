@@ -60,7 +60,7 @@ exports.getAllTours = async (req, res) => {
       .pagination()
       .fields();
 
-      console.log("Checking query middleware from 'controller' ");
+    console.log("Checking query middleware from 'controller' ");
 
     // execute query
     const allTours = await features.query;
@@ -186,7 +186,7 @@ exports.getTourStats = async (req, res) => {
       { $sort: { avgPrice: 1 } }, // sorting is done based on the data present inside "$group" fields, but based on the present inside database i.e. documents . "1" = ascending order , "-1" = descending order
       // { $sort: { avgPrice: -  1 } },
 
-      { $match: { _id: { $ne: 'EASY' } } }, // this is to show that a "stage" can be repeated .  And the execution proce is top to bottom i.e. $match --> $group --> $sort --> $match . "$ne" means "not equal to".
+      // { $match: { _id: { $ne: 'EASY' } } }, // this is to show that a "stage" can be repeated .  And the execution proce is top to bottom i.e. $match --> $group --> $sort --> $match . "$ne" means "not equal to".
     ]);
 
     console.log('stats => ', stats);
