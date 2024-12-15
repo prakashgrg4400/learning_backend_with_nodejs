@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-
+const validatorLib = require('validator');
 //====================== validators ========================
 // ===> Theseare the stuffs, which checks the formate of our data, and checks if the data is entered correctly by the user. S0me of the  validators provided by the "mongoose" are :-
 // string validators ==> required , maxlength , minlength  , enum
@@ -22,6 +22,10 @@ const tourSchema = new mongoose.Schema(
         10,
         'Name of tour must exceed 10 character , Your character {VALUE}',
       ],
+      validate: [
+        validatorLib.isAlpha,
+        'A tour name must contain alphabets only ',
+      ], // Here "isAlpha" is function, but we do not call the function inside "validate" , we just define it and mongoose will automatically call it as we did it for "priceDiscount" schema below where we only defined the function to check the validation. You can do the sa,]me work inside an array or an object as shown below in "priceDiscount" schema . But if you are defining your own function than it will look better in object form rather than in an array form .
     },
     slug: String,
     duration: {
@@ -54,7 +58,18 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    //!===> Custom validation ==========
+    priceDiscount: {
+      type: Number,
+      //==> We have property called "validate" , where we can define our custom validation function by assigning it to "validator" key. This validator function must return either true or false. Here we are using normal function so we can get access to this object. "this" object points towards the current document which is going to be created. And if the function returns true , than the new document will be created successfully, otherwise the custom error message will be displayed to the user . We can also use external library for validation like "validator npm" which is used above in "name" schema .
+      validate: {
+        validator: function (val) {
+          return val < this.price;
+        },
+        message:
+          'Price discount is greate than real price i.e. price discount ==> {VALUE}',
+      },
+    },
     summary: {
       type: String,
       trim: true,
