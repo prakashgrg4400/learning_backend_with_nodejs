@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
+//====================== validators ========================
+// ===> Theseare the stuffs, which checks the formate of our data, and checks if the data is entered correctly by the user. S0me of the  validators provided by the "mongoose" are :-
+// string validators ==> required , maxlength , minlength  , enum
+// number validators , date ==> min , max.
+//==> There are more mongoose built-in validators, you can check on the documentation too .
 //!====> Creating schema for tours using mongoose .
 const tourSchema = new mongoose.Schema(
   {
@@ -9,6 +14,14 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'], // first parameter is saying you cannot leave this field empty, second is error message.
       unique: true, // all names must be unique otherwise , we will get error.
       trim: true,
+      maxLength: [
+        20,
+        'Name of tour should not exceed 20 character, Your character {VALUE}', // here {VALUE} will store user input .
+      ],
+      minLength: [
+        10,
+        'Name of tour must exceed 10 character , Your character {VALUE}',
+      ],
     },
     slug: String,
     duration: {
@@ -21,10 +34,17 @@ const tourSchema = new mongoose.Schema(
     },
     difficulty: {
       type: String,
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message:
+          "Tour value must be 'easy' or 'medium' or 'difficult' . Your input is '{VALUE}'",
+      }, // enum is used to provide a fixed option between multiple options. If the input is not found inside that option than it will throw error .
     },
     ratingsAverage: {
       type: Number,
       default: 4,
+      max: [5, 'Rating should be below 5.0'],
+      min: [1, 'Rating should be above 1.0'],
     },
     ratingsQuantity: {
       type: Number,
