@@ -3,6 +3,7 @@ const Tour = require('./../models/tourModel');
 const { json } = require('express');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('../utils/catchError');
+const AppError = require('../utils/appError');
 
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
@@ -89,6 +90,10 @@ exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
   // const tour = await Tour.find({"_id" : req.params.id}) // Both of above and this line of code does the same work. To make our work easier, mongoose provides us with these methods predefined inside "models" .
 
+  //!===> Some times we might get "null" tours instead of receiving an error message if the tour is not available while searching using id, so to handle those null tours we will be using below code .
+  if (!tour) {
+    return next(new AppError('No such tour exists', 404));
+  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -150,6 +155,9 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     runValidators: true, // it says after the object is successfully updated, compare or validate it with the schema.
   });
 
+  if (!tour) {
+    return next(new AppError('No such tour exists', 404));
+  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -167,7 +175,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 // After deleting a data, its a good practice not to send anything to the clent.
 exports.deleteTour = catchAsync(async (req, res, next) => {
   // try {
-  await Tour.findByIdAndDelete(req.params.id); // this method will return a query and await will wait until the data is deleted successfully.
+  const tour = await Tour.findByIdAndDelete(req.params.id); // this method will return a query and await will wait until the data is deleted successfully.
+
+  if (!tour) {
+    return next(new AppError('No such tour exists', 404));
+  }
   res.status(200).json({
     status: 'success',
     data: null,
