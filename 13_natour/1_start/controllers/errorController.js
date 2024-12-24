@@ -34,8 +34,14 @@ function producitonErrorHandler(err, res) {
   }
 }
 
+// when the tour id is invalid , than this function will be triggered .
 function handleCastError(err) {
   return new AppError(`Invalid ${err.path} : ${err.value}`, 400);
+}
+
+// habdeling error , when the field with unique data is repeated
+function handleDuplicateField(err) {
+  return new AppError(`Duplicate value i.e. ${err.keyValue.name}`, 400);
 }
 
 module.exports = (err, req, res, next) => {
@@ -50,11 +56,15 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     console.log('stack ==> ', err.stack);
     if (err.name === 'CastError') {
-      error = handleCastError(err);
+      error = handleCastError(err); // when the tour id is invalid , than this function will be triggered .
       //   res.status(error.statusCode).json({
       //     status: 'fail',
       //     message: error.message,
       //   });
+    } else if (err.code === 11000) {
+      // habdeling error , when the field with unique data is repeated
+      console.log(err.code);
+      error = handleDuplicateField(err);
     }
     producitonErrorHandler(error, res);
   }
