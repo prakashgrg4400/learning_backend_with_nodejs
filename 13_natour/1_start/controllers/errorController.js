@@ -1,5 +1,7 @@
 //!===> In a middleware function, if we pass four arguments, than express will automatically understands that its a global error handler middleware. And it can be called by passing an error object argument inside "next()" function
 
+const AppError = require('../utils/appError');
+
 //==> During development phase we need send more details about the errors, so it will be easy for developers to understand the source of error.
 function developmentErrorHandler(err, res) {
   res.status(err.statusCode).json({
@@ -32,8 +34,12 @@ function producitonErrorHandler(err, res) {
   }
 }
 
+function handleCastError(err) {
+  return new AppError(`Invalid ${err.path} : ${err.value}`, 400);
+}
+
 module.exports = (err, req, res, next) => {
-  console.log(err.stack); // the stack property stores all the information about the error, like what triggered the error and its details.
+  // console.log(err.stack); // the stack property stores all the information about the error, like what triggered the error and its details.
 
   err.statusCode = err.statusCode || 500; // 500 ==> internal server error
   err.status = err.status || 'Error';
@@ -41,6 +47,15 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     developmentErrorHandler(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    producitonErrorHandler(err, res);
+    let error = { ...err };
+    console.log('stack ==> ', err.stack);
+    if (err.name === 'CastError') {
+      error = handleCastError(err);
+      //   res.status(error.statusCode).json({
+      //     status: 'fail',
+      //     message: error.message,
+      //   });
+    }
+    producitonErrorHandler(error, res);
   }
 };
