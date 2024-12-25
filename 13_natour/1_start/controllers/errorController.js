@@ -22,7 +22,7 @@ function producitonErrorHandler(err, res) {
       message: err.message,
     });
   } else {
-    // Handeking error caused by programming logic .
+    // Handeling error caused by programming logic .
     // log the error , to get more information about the error, without letting the user know about the error .
     console.error('Error ==> ', err);
 
@@ -44,6 +44,14 @@ function handleDuplicateField(err) {
   return new AppError(`Duplicate value i.e. ${err.keyValue.name}`, 400);
 }
 
+// This function will handle the validation error .
+function handleValidationError(error) {
+  // Object.values(your_object_here) accepts an object as an argument, and returns only the values of that object inside an array. It doesnt returns the "key" of those values .
+  let errorMessages = Object.values(error.errors).map((err) => err.message);
+  errorMessages = errorMessages.join('. ');
+  return new AppError(`Validation Error : ${errorMessages} `, 400);
+}
+
 module.exports = (err, req, res, next) => {
   // console.log(err.stack); // the stack property stores all the information about the error, like what triggered the error and its details.
 
@@ -57,14 +65,11 @@ module.exports = (err, req, res, next) => {
     console.log('stack ==> ', err.stack);
     if (err.name === 'CastError') {
       error = handleCastError(err); // when the tour id is invalid , than this function will be triggered .
-      //   res.status(error.statusCode).json({
-      //     status: 'fail',
-      //     message: error.message,
-      //   });
     } else if (err.code === 11000) {
       // habdeling error , when the field with unique data is repeated
-      console.log(err.code);
       error = handleDuplicateField(err);
+    } else if (err.name === 'ValidationError') {
+      error = handleValidationError(error);
     }
     producitonErrorHandler(error, res);
   }
