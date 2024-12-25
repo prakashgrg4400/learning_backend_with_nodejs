@@ -19,6 +19,7 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   console.log('Hello from middleware');
+  // console.log(x);// this is a synchronous error inside middleware function , and it will directly trigger the "global error handler middleware funcion" .
   next();
 });
 

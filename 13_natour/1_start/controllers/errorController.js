@@ -1,4 +1,5 @@
 //!===> In a middleware function, if we pass four arguments, than express will automatically understands that its a global error handler middleware. And it can be called by passing an error object argument inside "next()" function
+//!===> In case "synchronous" error occurs inside middleware function than it will automatically call "global error handler middleware" function.
 
 const AppError = require('../utils/appError');
 

@@ -2,6 +2,13 @@ const app = require('./app');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+//!==> NOTE:: It is better to handle the errors in their respective places, i.e. where these async or sync function or code are defined. But still you can also use below methods. If there is an "synchronous" error inside any middleware function than "uncaughtException" will not be triggered, instead express will directly call the "Global error handler middleware function " , and let it handle the error .
+process.on('uncaughtException', (err) => {
+  console.log('Uncaught exception');
+  console.log('Error Name : ', err.name, ' ', 'Error MEssage : ', err.message);
+  process.exit(1); // we dont have to close the server for "synchronous" task, as this synchronous code doesnt runs in the background, and handles the main work, so we can directly shut down it when an error occurs.
+});
+
 dotenv.config({ path: `${__dirname}/config.env` });
 // dotenv.config();
 
@@ -38,6 +45,15 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+//==> Below code is to handle the error for synchronous task, and above code is for handeling the error in asynchronous task. But below error code will not run because this error handler event is placed after the error occurs. Instead it should be be placed at the beginning of the code before the synchronous task starts running, so event will start listening for the synchronous error from the brginning of the code .
+// console.log(x);
+// process.on('uncaughtException', (err) => {
+//   console.log('Uncaught exception');
+//   console.log('Error Name : ', err.name, ' ', 'Error MEssage : ', err.message);
+//   process.exit(1);
+// });
+// console.log(x); // since this code is written after the event was set up, so the event "uncaughtExceptio" will listen to this synchronous error.
 
 // node --env-file=config.env server.js ==> Our current "dotenv" module is unable to load environment variables to our "process.env" . So we are using the above command to load the environment variable from the ".env" file using above command . You can add multiple files using ==> "node --env-file=config.env --env-file=.env server.js" .  You can remove or comment the "dotenv" codes
 
