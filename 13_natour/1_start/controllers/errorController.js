@@ -52,6 +52,7 @@ function handleValidationError(error) {
   return new AppError(`Validation Error : ${errorMessages} `, 400);
 }
 
+//=================== Global Error Handler Middleware ===========================
 module.exports = (err, req, res, next) => {
   // console.log(err.stack); // the stack property stores all the information about the error, like what triggered the error and its details.
 
