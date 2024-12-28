@@ -12,6 +12,7 @@
   "author": "Prakash Gurung",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongodb": "^6.8.0",
@@ -34,7 +35,7 @@
     "eslint-plugin-react": "^7.35.0",
     "glob": "^11.0.0",
     "lru-cache": "^11.0.0",
-    "ndb": "^1.1.5",
+    "ndb": "^0.2.4",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1"
