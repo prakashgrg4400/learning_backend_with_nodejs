@@ -48,7 +48,7 @@ userSchema.pre('save', async function (next) {
     return next();
   }
   this.password = await bcrypt.hash(this.password, 12); // bscriptjs is the library which is used to hash the password.
-  this.confirmPassword = undefined;
+  this.confirmPassword = undefined; // in mongoose if we assign a field with undefined , than it will not be stored in the database. As we are using confirmPassword field only for validation purpose , so we are not storing it in the database.
   next();
 });
 
