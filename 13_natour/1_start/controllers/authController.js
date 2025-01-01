@@ -2,6 +2,13 @@
 const User = require('../models/userModel');
 const catchAsyncError = require('../utils/catchError');
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/appError');
+
+const createToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
 
 //==> Below controller will create a new user in the database , when a user sends a post request at /signup route. If the user is successfully created , then it will send the response to the user with the status code 201 and the newly created user in the response. Otherwise it will send the error to the user using our custom global error handler middleware . First catchAsyncError will catch the error and then it will pass the error to the global error handler middleware. It will do the work of try catch block. So instead os using try catch block in each controller , we are using this catchAsyncError function to catch the error and pass it to the global error handler middleware.
 exports.signup = catchAsyncError(async (req, res, next) => {
@@ -15,9 +22,10 @@ exports.signup = catchAsyncError(async (req, res, next) => {
   });
 
   //==> Here we are using "jsonwebtoken" package to create a token for the user. Since this controller handles for signing the new users, so we are not really authenticating the user here. We are just creating a token for the user , so that the user can use this token to access the protected routes. We are using the "sign()" method of jwt to create a token for the user. The first parameter is the payload , which is the data that we want to store in the token. We are storing the user id in the token. The second parameter is the secret key , which is used to sign the token. The third parameter is the options , which is an object. WE are using an option called "expiresIn" , which is the time after which the token will expire. We are storing the token in a variable called "token". We are sending the token in the response to the user. We are also sending the newly created user in the response. We are sending the status code 201 , which means that the user is successfully created.
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+  // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, {
+  //   expiresIn: process.env.JWT_EXPIRES_IN,
+  // });
+  const token = createToken(user._id);
   //==> jwt is created by the combination of encoded(header)+encoded(payload)+signature . The signature is by applying an encoding algorithm on "encoded(header)"+"encoded(payload)"+"secret key" .
   //!==> You can go to "jwt.io" website to decode the jwt token. You can paste the jwt token in the website and it will decode the token for you. You can see the header , payload and signature of the token.
 
@@ -27,5 +35,34 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     data: {
       user: newUser,
     },
+  });
+});
+
+exports.login = catchAsyncError(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  //==> checking if user has entered data for both field .
+  if (!email || !password) {
+    next(new AppError('Email and Password field is required', 400));
+  }
+
+  //==> fetching data from the database based on user email , and including the "password" field with the help of "select" method, where "+" sign means include this field in the output, as it was excluded in the "userModal" section, So other client wont be able to see the password  on the client side .
+  const user = await User.findOne({ email: email }).select('+password'); // if email is valid fetching all the data related to that email
+
+  //==> checking if database stored password and the password entered by the user is same or not .
+  // let result = await user.validatePassword(password, user.password); //!==> If user doesnt exist, than this line of code will not run and we will get error, so we will directly use it as shown below . Now even if user doent exist , we will get proper error message, and if user exist, than we will validate the password as shown below .
+
+  // if (!user || !result) {
+  if (!user || !(await user.validatePassword(password, user.password))) {
+    // if either email, or password do not match than this error will befired
+    next(new AppError('Email or Password doesnt match the credentials', 401));
+  }
+
+  // ==> After all the credentials are matched, we will create a "JWT" token and pass it to the client as shown below .
+  const token = createToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token: token,
   });
 });

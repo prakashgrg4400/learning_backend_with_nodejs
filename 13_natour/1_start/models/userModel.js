@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password is required'],
     minLength: [8, 'Password must be at least 8 characters.'],
+    select: false, // setting this property false means that this data will not be delivered to the user side.
   },
   //===> Validating the confirm password field , by comparing the password field with the confirm password field . If both are same than only the user will be able to create an account.
   //!==> NOTE ::> This will only work on "create()" and "save()" methods. It will not work on "update()" methods or any other methods. So from now on , we will be using "save()" method to update the password.
@@ -51,6 +52,14 @@ userSchema.pre('save', async function (next) {
   this.confirmPassword = undefined; // in mongoose if we assign a field with undefined , than it will not be stored in the database. As we are using confirmPassword field only for validation purpose , so we are not storing it in the database.
   next();
 });
+
+// by creating a method inside an instance of an schema, we can make this function accessiable to all the documents present inside the collection . since comparing password is data related work so we are defining this inside model .
+userSchema.methods.validatePassword = async function (
+  userPassword,
+  databasePassword,
+) {
+  return await bcrypt.compare(userPassword, databasePassword); // compare function will compare the password entered by user and the encrypted password stored inside database. It will return a promise, and when the promise is resolved, we will get a boolean value. true if password is same , false if password are different .
+};
 
 const User = mongoose.model('User', userSchema);
 

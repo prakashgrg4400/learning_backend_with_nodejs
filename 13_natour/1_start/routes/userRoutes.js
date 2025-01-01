@@ -5,6 +5,7 @@ const authController = require('../controllers/authController'); // For authenti
 const router = express.Router();
 
 router.post('/signup', authController.signup); // we are creating a separate route for signup, as it is a separate concern and we want to keep our code modular and clean. So we are creating a separate route for signup.
+router.post('/login', authController.login);
 
 router
   .route('/')
