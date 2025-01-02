@@ -1,5 +1,6 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
+const authController = require('../controllers/authController');
 
 const router = express.Router(); // this will return a middleware funtion i.e. router.
 
@@ -21,8 +22,8 @@ router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 // multiple middleware chaining.
 router
-  .route('/')
-  .get(tourController.getAllTours)
+  .route('/') //!==> authController.protect middleware, will first check if the user is valid or not .
+  .get(authController.protect, tourController.getAllTours)
   // .post(tourController.checkBody  ,tourController.createTour); // here we are chaining multiple middleware, as we are already familiar with controller. They are also middleware function. Here first "checkBody" middleware function will be executed than only createTour will be executed. The checkbody middleware is checking whether there is "name and price" details in the data or not. If there is than it will move to next middleware, otherwise it will throw an error.
   .post(tourController.createTour);
 

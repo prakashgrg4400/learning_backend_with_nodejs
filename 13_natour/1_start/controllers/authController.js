@@ -4,6 +4,7 @@ const catchAsyncError = require('../utils/catchError');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 
+//==> A utility function which will create JWT token for use.
 const createToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -65,4 +66,31 @@ exports.login = catchAsyncError(async (req, res, next) => {
     status: 'success',
     token: token,
   });
+});
+
+// ==> below controller will checki if the user is valid or not , before fetching for the tours.
+exports.protect = catchAsyncError(async (req, res, next) => {
+  //!==> To check if the user is valid or not, first we will check if the client has used jwt token or not as shown below . To sent a JWT token from the client side in a proper manner, we use "Authorization" : "Bearer jwt_token_of_user" in the headers field . And to access those header data we will use req.headers.
+  console.log(req.headers);
+  let token;
+
+  //!==> Checking if client has send the "JWT" token in the headers or not .
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1]; //! if jwt token is send from client, than storing the jwt token.
+    console.log('Token ==> ', token);
+  }
+
+  //!==> In case if the client is not sending the jwt token, than they are not valid user, so we will not send data to the client instead we will send an error message appropriate for the unauthorized user.
+  if (!token) {
+    return next(
+      new AppError(
+        'Unauthorized user , You must be a valid user to access the data',
+        401,
+      ),
+    ); //!==> 401 refers to the unauthorized user.
+  }
+  next();
 });
