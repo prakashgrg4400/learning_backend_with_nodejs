@@ -1,6 +1,7 @@
 //!===> In a middleware function, if we pass four arguments, than express will automatically understands that its a global error handler middleware. And it can be called by passing an error object argument inside "next()" function
 //!===> In case "synchronous" error occurs inside middleware function than it will automatically call "global error handler middleware" function.
 
+const { JsonWebTokenError } = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 
 //==> During development phase we need send more details about the errors, so it will be easy for developers to understand the source of error.
@@ -53,6 +54,18 @@ function handleValidationError(error) {
   return new AppError(`Validation Error : ${errorMessages} `, 400);
 }
 
+// THis function will handle invalid tokens.
+function handleInvalidToken() {
+  return new AppError('Invalid JWT Token , Please login again', 401);
+}
+
+// This funciton will handle expired tokens .
+function handleExpiredToken() {
+  return new AppError(
+    'Your Token is Expired. Please login to get access to the services.',
+    401,
+  );
+}
 //=================== Global Error Handler Middleware ===========================
 module.exports = (err, req, res, next) => {
   // console.log(err.stack); // the stack property stores all the information about the error, like what triggered the error and its details.
@@ -72,6 +85,12 @@ module.exports = (err, req, res, next) => {
       error = handleDuplicateField(err);
     } else if (err.name === 'ValidationError') {
       error = handleValidationError(error);
+    } else if (err.name === 'JsonWebTokenError') {
+      // if token is changed by third party , this error will trigger
+      error = handleInvalidToken();
+    } else if (err.name === 'TokenExpiredError') {
+      // if token is expired , than this function will be triggered .
+      error = handleExpiredToken();
     }
     producitonErrorHandler(error, res);
   }

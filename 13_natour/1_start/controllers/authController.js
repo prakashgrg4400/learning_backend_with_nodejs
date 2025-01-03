@@ -3,6 +3,7 @@ const User = require('../models/userModel');
 const catchAsyncError = require('../utils/catchError');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
+const { promisify } = require('util');
 
 //==> A utility function which will create JWT token for use.
 const createToken = (userId) => {
@@ -87,10 +88,16 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   if (!token) {
     return next(
       new AppError(
-        'Unauthorized user , You must be a valid user to access the data',
+        'Unauthorized user , You must have a valid token to access the data',
         401,
       ),
     ); //!==> 401 refers to the unauthorized user.
   }
+
+  //!====> Verification of the token .
+  // let decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  let decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY); // promisify accepts a function and when that function is called, it retuns a promise.
+  console.log(decoded);
+
   next();
 });
