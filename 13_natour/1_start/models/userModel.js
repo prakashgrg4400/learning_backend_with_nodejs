@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords do not match',
     },
   },
+  passwordChangedAt: Date,
 });
 
 //===> Encrypting the password before saving it to the database.
@@ -59,6 +60,17 @@ userSchema.methods.validatePassword = async function (
   databasePassword,
 ) {
   return await bcrypt.compare(userPassword, databasePassword); // compare function will compare the password entered by user and the encrypted password stored inside database. It will return a promise, and when the promise is resolved, we will get a boolean value. true if password is same , false if password are different .
+};
+
+// comparing if token is issued after or before the password is changed. "getTime()" returns the full date in milliseconds,
+userSchema.methods.isPasswordChanged = function (tokenIssued) {
+  console.log('Token issued ==> ', tokenIssued);
+  console.log('password changed ==> ', this.passwordChangedAt);
+  if (this.passwordChangedAt) {
+    let changeIssued = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return changeIssued > tokenIssued; // if password changed issued time is greater, than our token is old
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

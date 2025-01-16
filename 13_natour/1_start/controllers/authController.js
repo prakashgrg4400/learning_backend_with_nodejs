@@ -21,13 +21,14 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
+    passwordChangedAt: req.body.passwordChangedAt,
   });
 
   //==> Here we are using "jsonwebtoken" package to create a token for the user. Since this controller handles for signing the new users, so we are not really authenticating the user here. We are just creating a token for the user , so that the user can use this token to access the protected routes. We are using the "sign()" method of jwt to create a token for the user. The first parameter is the payload , which is the data that we want to store in the token. We are storing the user id in the token. The second parameter is the secret key , which is used to sign the token. The third parameter is the options , which is an object. WE are using an option called "expiresIn" , which is the time after which the token will expire. We are storing the token in a variable called "token". We are sending the token in the response to the user. We are also sending the newly created user in the response. We are sending the status code 201 , which means that the user is successfully created.
   // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, {
   //   expiresIn: process.env.JWT_EXPIRES_IN,
   // });
-  const token = createToken(user._id);
+  const token = createToken(newUser._id);
   //==> jwt is created by the combination of encoded(header)+encoded(payload)+signature . The signature is by applying an encoding algorithm on "encoded(header)"+"encoded(payload)"+"secret key" .
   //!==> You can go to "jwt.io" website to decode the jwt token. You can paste the jwt token in the website and it will decode the token for you. You can see the header , payload and signature of the token.
 
@@ -98,6 +99,25 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   // let decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
   let decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY); // promisify accepts a function and when that function is called, it retuns a promise.
   console.log(decoded);
+
+  //!====> Verification of the user .
+  const currentUser = await User.findById(decoded.id);
+  // console.log('User ==> ', currentUser);
+  if (!currentUser) {
+    return next(
+      new AppError('The user having this token is not available!!!', 401),
+    );
+  }
+
+  //!====> verification of the user after the password is changed
+  if (currentUser.isPasswordChanged(decoded.iat)) {
+    return next(
+      new AppError('Old token , Your password is changed recently', 401),
+    );
+  }
+
+  //!==> Give access to the protected routes
+  req.user = currentUser;
 
   next();
 });
