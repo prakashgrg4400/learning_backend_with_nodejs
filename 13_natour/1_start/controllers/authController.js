@@ -22,6 +22,7 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   });
 
   //==> Here we are using "jsonwebtoken" package to create a token for the user. Since this controller handles for signing the new users, so we are not really authenticating the user here. We are just creating a token for the user , so that the user can use this token to access the protected routes. We are using the "sign()" method of jwt to create a token for the user. The first parameter is the payload , which is the data that we want to store in the token. We are storing the user id in the token. The second parameter is the secret key , which is used to sign the token. The third parameter is the options , which is an object. WE are using an option called "expiresIn" , which is the time after which the token will expire. We are storing the token in a variable called "token". We are sending the token in the response to the user. We are also sending the newly created user in the response. We are sending the status code 201 , which means that the user is successfully created.
@@ -117,7 +118,27 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   }
 
   //!==> Give access to the protected routes
-  req.user = currentUser;
+  res.user = currentUser;
 
   next();
 });
+
+// we are directly calling this function , so this function will return middleware , and provide access to the arguments available in the wrapper function i.e. "restrict function" , by using the concept of closure as shown below .
+exports.restrict = (...roles) => {
+  return (req, res, next) => {
+    // console.log('roles ==> ', roles);
+    // console.log('USer ==> ', res.user);
+    if (!roles.includes(res.user.role)) {
+      // includes() method will check for same data inside an array and return true if that data is available inside an array otherwise false .
+      return next(
+        new AppError(
+          'This feature is denied for user . Authorization avialable only for "admin" and "lead-guide" .',
+          403,
+        ),
+      );
+    }
+
+    // if the person trying to delete tour is not authprized than above code will handle it, but if the person is authorized than we will provide access as below .
+    next();
+  };
+};
