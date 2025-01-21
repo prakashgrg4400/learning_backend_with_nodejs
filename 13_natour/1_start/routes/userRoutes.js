@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post('/signup', authController.signup); // we are creating a separate route for signup, as it is a separate concern and we want to keep our code modular and clean. So we are creating a separate route for signup.
 router.post('/login', authController.login);
+router.post('/forgotPassword', authController.forgotPassword);
+router.post('/resetPassword', authController.resetPassword);
 
 router
   .route('/')

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validatorPKG = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -39,6 +40,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  resetPasswordToken: String,
+  resetPasswordTokenExpires: Date,
 });
 
 //===> Encrypting the password before saving it to the database.
@@ -76,6 +79,23 @@ userSchema.methods.isPasswordChanged = function (tokenIssued) {
     return changeIssued > tokenIssued; // if password changed issued time is greater, than our token is old
   }
   return false;
+};
+
+//!==> NOTE :::> WE always store critical information in encrypted format in our databse. for eg password , passwordResetToken .
+userSchema.methods.createForgotPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex'); // random bytes generates a random artifical numbers of 32 bbytes , and converts them in to string of hex using "toString(hex)"
+
+  // encrypting the reset Token, to store it inside the database .
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex'); // createHash() uses an encryption algorithm to encrypt our data, update() method helps us to feed the data to the encryption algorithm which we want to encrypt , and finally digest helps us to create the final version of the encryption algorithm and shows them in hex value.
+
+  this.resetPasswordTokenExpires = Date.now() + 10 * 60 * 1000;
+
+  console.log({ resetToken }, this.resetPasswordToken);
+
+  return resetToken; // we will save the encrypted token inside database, and send the non-encrypted on to the user , so we can compare the resetToken when user enter new password .
 };
 
 const User = mongoose.model('User', userSchema);

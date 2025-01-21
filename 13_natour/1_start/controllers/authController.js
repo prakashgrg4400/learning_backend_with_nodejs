@@ -142,3 +142,22 @@ exports.restrict = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    // checking if the provided email is availabe inside databse or not .
+    return next(new AppError('The user is not found !!!', 404));
+  }
+
+  const resetToken = user.createForgotPasswordToken(); // generating reset token
+
+  user.save({ validateBeforeSave: false }); // usually we need both "email" and "password" to svae the data in database, but we can still save it using by using "validateBeforeSave" property, which turns off the validation process .
+
+  return res.status(200).json({
+    resetToken,
+  });
+};
+
+exports.resetPassword = (req, res, next) => {};
