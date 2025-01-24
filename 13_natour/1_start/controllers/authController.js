@@ -4,6 +4,7 @@ const catchAsyncError = require('../utils/catchError');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 const { promisify } = require('util');
+const sendMail = require('../utils/email');
 
 //==> A utility function which will create JWT token for use.
 const createToken = (userId) => {
@@ -155,9 +156,36 @@ exports.forgotPassword = async (req, res, next) => {
 
   user.save({ validateBeforeSave: false }); // usually we need both "email" and "password" to svae the data in database, but we can still save it using by using "validateBeforeSave" property, which turns off the validation process .
 
-  return res.status(200).json({
-    resetToken,
-  });
+  console.log('Protocol ==> ', req.protocol);
+  console.log('Host ==> ', req.get('host'));
+
+  const resetLink = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+
+  const userResetMailInfo = {
+    mail: user.email,
+    message: `Forgot your password !!! , Please use the link provided to reset your password i.e. ${resetLink}`,
+    subject: 'Reset your forgotten password',
+  };
+    
+  console.log('userResetMailInfo ===> ', userResetMailInfo);
+  console.log(sendMail);
+
+  try {
+    await sendMail(userResetMailInfo);
+    return res.status(200).json({
+      status: 'success',
+      message:
+        'The password reset token hase been send to your mail. Please check your mail',
+    });
+  } catch (err) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpires = undefined;
+    user.save({ validateBeforeSave: false });
+    console.log('Unable to send email , error message ==> ', err);
+    return next(
+      new AppError('Failed to send the mail. Please try again !!!', 500),
+    );
+  }
 };
 
 exports.resetPassword = (req, res, next) => {};
