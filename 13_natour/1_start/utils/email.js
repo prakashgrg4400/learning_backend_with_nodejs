@@ -2,11 +2,11 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async (option) => {
   //==> Creating a transporter , which will act as a medium to provide service .
-  console.log('==========env data ================');
-  console.log(process.env.MAIL_HOST);
-  console.log(process.env.MAIL_PORT);
-  console.log(process.env.MAIL_USER);
-  console.log(process.env.MAIL_USER_PASSWORD);
+  // console.log('==========env data ================');
+  // console.log(process.env.MAIL_HOST);
+  // console.log(process.env.MAIL_PORT);
+  // console.log(process.env.MAIL_USER);
+  // console.log(process.env.MAIL_USER_PASSWORD);
 
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,

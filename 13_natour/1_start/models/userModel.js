@@ -62,6 +62,15 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// isNew property checks if the document created is new .
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+  this.passwordChangedAt = Date.now() - 1000; //==> after resetting the password successfully, before saving it this function will run and set the passwordCHangedAt to current date. But sometime this property might be late to set the value to current data. And token might be created before setting this date. Which will cause unauthorized user which is done in "protect" middleware. SO to fix this issue, we will decrease 1 second from the current time as shown below.
+  next();
+});
+
 // by creating a method inside an instance of an schema, we can make this function accessiable to all the documents present inside the collection . since comparing password is data related work so we are defining this inside model .
 userSchema.methods.validatePassword = async function (
   userPassword,

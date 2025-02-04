@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 const { promisify } = require('util');
 const sendMail = require('../utils/email');
+const crypto = require('crypto');
+const catchError = require('../utils/catchError');
 
 //==> A utility function which will create JWT token for use.
 const createToken = (userId) => {
@@ -166,7 +168,7 @@ exports.forgotPassword = async (req, res, next) => {
     message: `Forgot your password !!! , Please use the link provided to reset your password i.e. ${resetLink}`,
     subject: 'Reset your forgotten password',
   };
-    
+
   console.log('userResetMailInfo ===> ', userResetMailInfo);
   console.log(sendMail);
 
@@ -188,4 +190,43 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-exports.resetPassword = (req, res, next) => {};
+exports.resetPassword = catchError(async (req, res, next) => {
+  //==> create the encryped version of reset token to compare it
+  const resetToken = crypto
+    .createHash('sha256')
+    .update(req.params.resetToken)
+    .digest('hex');
+
+  //==> find the user based on reset token and also check if the token is expired or not
+  const user = await User.findOne({
+    resetPasswordToken: resetToken,
+    resetPasswordTokenExpires: { $gt: Date.now() },
+  });
+
+  //==> If user is fetched
+  if (!user) {
+    return next(
+      new AppError(
+        'Your reset token is expired. Try again. Unauthorized user',
+        401,
+      ),
+    );
+  }
+
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordTokenExpires = undefined;
+
+  //==> Change the "passwordChangedAt" value . But we will do this work using the middleware using "pre" before saving the document . You can check it out in the user model .
+
+  // ==> using save method to save the data instead of using update and other method, will help to check the data and pass it through the validation which we described in our model. It is good practice to use save method to save data in our database if the work is related to password and authentication.
+  await user.save();
+
+  const token = createToken(user._id); //
+
+  res.status(200).json({
+    status: 'success',
+    token: token,
+  });
+});
